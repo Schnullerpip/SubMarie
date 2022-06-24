@@ -1,6 +1,6 @@
 import { Bodies, Svg, Vertices } from "matter-js";
 
-export async function loadSvgVertices(path: string, scale: number, ...a: Parameters<typeof Bodies.fromVertices>) {
+Bodies.fromSvg = async (path: string, scale: number, ...a: Parameters<typeof Bodies.fromVertices>) => {
     var select = (root: any, selector: string) => Array.prototype.slice.call(root.querySelectorAll(selector));
     var loadSvg = (url: string) =>
         fetch(url)
@@ -12,4 +12,4 @@ export async function loadSvgVertices(path: string, scale: number, ...a: Paramet
     );
 
     return Bodies.fromVertices(a[0], a[1], vertices, a[3], a[4]);
-}
+};

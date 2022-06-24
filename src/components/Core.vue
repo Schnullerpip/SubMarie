@@ -6,7 +6,7 @@ import { BellControls } from "../controls/bellControls";
 import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
 import SubMarine from "../assets/SubMarine.png";
-import { loadSvgVertices } from "../utils/svgs";
+import "../utils/svgs";
 
 // module aliases
 const Engine = Matter.Engine,
@@ -76,16 +76,22 @@ onMounted(() => {
     new Camera(bell, engine, render, appDimensions);
 
     // create ground + left and right mock terrain
-    const background = Bodies.rectangle(center.x, center.y, appDimensions.width, appDimensions.height, {
-        collisionFilter: {
-            group: -2,
-            category: 2,
-            mask: 0,
-        },
-        render: { fillStyle: "lightblue" },
-    });
-    const wallLeft = Bodies.rectangle(0, appDimensions.height, 80, appDimensions.height, { isStatic: true });
-    const wallRight = Bodies.rectangle(appDimensions.width, appDimensions.height, 80, appDimensions.height, {
+    const background = Bodies.rectangle(
+        center.x * -1,
+        center.y * -4,
+        appDimensions.width * 4,
+        appDimensions.height * 10,
+        {
+            collisionFilter: {
+                group: -1,
+                category: 2,
+                mask: 0,
+            },
+            render: { fillStyle: "lightblue" },
+        }
+    );
+    const wallLeft = Bodies.rectangle(0, appDimensions.height * -4, 80, appDimensions.height * 10, { isStatic: true });
+    const wallRight = Bodies.rectangle(appDimensions.width, appDimensions.height * -4, 80, appDimensions.height * 10, {
         isStatic: true,
     });
     const ground = Bodies.rectangle(appDimensions.width / 2, appDimensions.height, appDimensions.width, 60, {
@@ -95,6 +101,10 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, wallLeft, wallRight, ground, bell]);
 
+    Bodies.fromSvg("/svg/Mediamodifier-Design.svg", 4, center.x, center.y, []).then((svg) =>
+        Composite.add(engine.world, svg)
+    );
+
     // run the renderer
     Render.run(render);
 
@@ -103,10 +113,6 @@ onMounted(() => {
 
     // run the engine
     Runner.run(runner, engine);
-
-    loadSvgVertices("/svg/Mediamodifier-Design.svg", 4, center.x, center.y, []).then((svg) =>
-        Composite.add(engine.world, svg)
-    );
 });
 </script>
 
