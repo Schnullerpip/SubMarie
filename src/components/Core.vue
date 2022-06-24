@@ -3,6 +3,7 @@ import Matter, { Common } from 'matter-js';
 import { onMounted } from 'vue';
 import * as PolyDecomp from 'poly-decomp';
 import { BellControls } from '../controls/bellControls';
+import { UserInputHandler } from '../controls/userInput';
 
 // module aliases
 const Engine = Matter.Engine,
@@ -14,7 +15,12 @@ const Engine = Matter.Engine,
 Matter.Common.setDecomp(PolyDecomp)
 
 // create an engine
-const engine = Engine.create();
+const engine = Engine.create({
+    gravity: {
+        x: 0,
+        y: 0
+    }
+});
 
 const appDimensions = {
     width: 1080,
@@ -26,9 +32,16 @@ const center = {
     y: appDimensions.height / 2,
 }
 
-const bell = Bodies.circle(center.x, appDimensions.height - 100, 50)
+const bell = Bodies.circle(center.x, appDimensions.height - 60, 60, {
+    frictionAir: 0.03,
+    inertia: Infinity,
+    inverseInertia: 0
+})
 
-const bellControls = new BellControls(bell)
+const bellControls = new BellControls(bell, engine)
+const userInputHandler = new UserInputHandler(document.body, bell)
+
+userInputHandler.registerCallback((input) => bellControls.addForce(input))
 
 
 onMounted(() => {
@@ -68,8 +81,6 @@ onMounted(() => {
 
     // run the engine
     Runner.run(runner, engine);
-
-    bellControls.addForce(0, -0.1)
 })
 </script>
 
