@@ -8,7 +8,7 @@ export class Camera {
         engine: Engine,
         private render: Render,
         private appDimensions: { width: number; height: number },
-        private readonly yPos = 200
+        private readonly yPos = 300
     ) {
         this.cameraBody = Bodies.rectangle(center.position.x, center.position.y, 10, 10, {
             collisionFilter: {

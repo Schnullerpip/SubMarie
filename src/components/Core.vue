@@ -5,6 +5,7 @@ import * as PolyDecomp from "poly-decomp";
 import { BellControls } from "../controls/bellControls";
 import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
+import SubMarine from "../assets/SubMarine.png";
 
 // module aliases
 const Engine = Matter.Engine,
@@ -32,10 +33,18 @@ const center = {
     y: appDimensions.height / 2,
 };
 
-const bell = Bodies.circle(center.x, appDimensions.height - 60, 60, {
+const bell = Bodies.circle(center.x, appDimensions.height - 60, 100, {
     frictionAir: 0.03,
     inertia: Infinity,
     inverseInertia: 0,
+    restitution: 2,
+    render: {
+        sprite: {
+            texture: SubMarine,
+            yScale: 0.5,
+            xScale: 0.5,
+        },
+    },
 });
 
 const bellControls = new BellControls(bell, engine);
@@ -62,6 +71,7 @@ onMounted(() => {
             showCollisions: true,
             showPerformance: true,
             showInternalEdges: true,
+            wireframes: false,
             ...appDimensions,
         },
     });
@@ -101,4 +111,9 @@ onMounted(() => {
     -->
 </template>
 
-<style scoped />
+<style>
+canvas {
+    height: 100vh;
+    object-fit: contain;
+}
+</style>
