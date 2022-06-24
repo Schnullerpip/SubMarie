@@ -44,14 +44,12 @@ const center = {
 const bubbleAssets = [Bubble01, Bubble02, Bubble03, Bubble04, Bubble05, Bubble06];
 const getRandomBubbleAsset = () => {
     const randIdx = Math.ceil(Math.random() * 5);
-    if (randIdx === 0 || randIdx === 5) {
-        console.log("Rand idx", randIdx);
-    }
     return bubbleAssets[randIdx];
 };
 
 const bubbleCreator = () => {
-    return Bodies.circle(0, 0, 10, {
+    const randomScale = Math.random() * 0.1;
+    const bubble = Bodies.circle(0, 0, 10, {
         collisionFilter: {
             group: -1,
             category: 0,
@@ -60,14 +58,18 @@ const bubbleCreator = () => {
         render: {
             sprite: {
                 texture: getRandomBubbleAsset(),
-                xScale: 0.1,
-                yScale: 0.1,
+                xScale: randomScale,
+                yScale: randomScale,
             },
         },
     });
+
+    Body.applyForce(bubble, bubble.position, Vector.create(0, -0.003));
+
+    return bubble;
 };
 
-const bubbleObjectPool = new ObjectPool(bubbleCreator, 100);
+const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
 
 const bell = Bodies.circle(center.x, appDimensions.height - 60, 100, {
     frictionAir: 0.03,
@@ -89,16 +91,25 @@ const userInputHandler = new UserInputHandler(document.body, bell);
 const particleSystems: ParticleSystem<Body>[] = [];
 
 userInputHandler.registerCallback((inputForce) => {
-    bellControls.addForce(inputForce);
+    moveBell(inputForce);
+});
+
+const moveBell = (direction: Vector) => {
+    bellControls.addForce(direction);
 
     particleSystems.push(
         new ParticleSystem(engine, bubbleObjectPool, (instance) => {
-            const reverseForceInput = Vector.mult(inputForce, -1);
+            const reverseForceInput = Vector.mult(direction, -1);
+            const orthogonalForce = Vector.mult(
+                Vector.create(reverseForceInput.y, reverseForceInput.y),
+                (Math.random() - 0.5) * 2 * 0.2
+            );
             Body.setPosition(instance, Vector.add(bell.position, Vector.mult(reverseForceInput, 50)));
-            Body.setVelocity(instance, Vector.mult(reverseForceInput, 2));
+            Body.setVelocity(instance, Vector.mult(Vector.add(reverseForceInput, orthogonalForce), 3));
+            Body.setAngularVelocity(instance, 0.001);
         })
     );
-});
+};
 
 let render: Render;
 
@@ -114,11 +125,8 @@ onMounted(() => {
         engine: engine,
 
         options: {
-            showAxes: true,
-            showIds: true,
             showCollisions: true,
             showPerformance: true,
-            showInternalEdges: true,
             wireframes: false,
             ...appDimensions,
         },

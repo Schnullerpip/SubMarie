@@ -11,8 +11,8 @@ export class ParticleSystem<T extends Body> {
         private readonly engine: Engine,
         private readonly pool: ObjectPool<T>,
         private readonly initializer: (instance: T) => void,
-        private readonly rate = 1,
-        private readonly lifeTime = 1
+        private readonly rate = 0.25,
+        private readonly lifeTime = 2
     ) {
         Events.on(engine, "beforeUpdate", (event) => {
             const deltaTime = event.source.timing.lastDelta;
@@ -23,7 +23,7 @@ export class ParticleSystem<T extends Body> {
     private update(deltaTimeMs: number) {
         const deltaTime = deltaTimeMs / 1000;
 
-        //this.killOldParticles(deltaTime);
+        this.killOldParticles(deltaTime);
         this.birthNewParticles(deltaTime);
     }
 
@@ -40,7 +40,6 @@ export class ParticleSystem<T extends Body> {
         let timeSinceLastBirth = 0;
 
         return (deltaTime: number) => {
-            console.log("time since last birth: ", this.rate, timeSinceLastBirth);
             if ((timeSinceLastBirth += deltaTime) >= this.rate) {
                 timeSinceLastBirth = 0;
                 const instance = this.pool.getInstance();
