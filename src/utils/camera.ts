@@ -10,7 +10,7 @@ export class Camera {
         private appDimensions: { width: number; height: number },
         private readonly yPos = 300
     ) {
-        this.cameraBody = Bodies.rectangle(center.position.x, center.position.y, 10, 10, {
+        this.cameraBody = Bodies.rectangle(center.position.x, center.position.y, 1, 1, {
             collisionFilter: {
                 group: -1,
                 category: 2,
@@ -41,7 +41,7 @@ export class Camera {
         Render.lookAt(this.render, {
             min: {
                 x: this.cameraBody.position.x - this.appDimensions.width / 2,
-                y: this.cameraBody.position.y - (this.appDimensions.height + this.yPos),
+                y: this.cameraBody.position.y - (this.appDimensions.height - this.yPos),
             },
             max: {
                 x: this.cameraBody.position.x + this.appDimensions.width / 2,
