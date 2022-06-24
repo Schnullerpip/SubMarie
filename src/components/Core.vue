@@ -1,58 +1,59 @@
 <script setup lang="ts">
-import Matter, { Common } from 'matter-js';
-import { onMounted } from 'vue';
-import * as PolyDecomp from 'poly-decomp';
-import { BellControls } from '../controls/bellControls';
-import { UserInputHandler } from '../controls/userInput';
+import Matter, { Common, Render } from "matter-js";
+import { onMounted } from "vue";
+import * as PolyDecomp from "poly-decomp";
+import { BellControls } from "../controls/bellControls";
+import { UserInputHandler } from "../controls/userInput";
+import { Camera } from "../utils/camera";
 
 // module aliases
 const Engine = Matter.Engine,
-    Render = Matter.Render,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Composite = Matter.Composite;
 
-Matter.Common.setDecomp(PolyDecomp)
+Matter.Common.setDecomp(PolyDecomp);
 
 // create an engine
 const engine = Engine.create({
     gravity: {
         x: 0,
-        y: 0
-    }
+        y: 0,
+    },
 });
 
 const appDimensions = {
     width: 1080,
-    height: 1920
-}
+    height: 1920,
+};
 
 const center = {
     x: appDimensions.width / 2,
     y: appDimensions.height / 2,
-}
+};
 
 const bell = Bodies.circle(center.x, appDimensions.height - 60, 60, {
     frictionAir: 0.03,
     inertia: Infinity,
-    inverseInertia: 0
-})
+    inverseInertia: 0,
+});
 
-const bellControls = new BellControls(bell, engine)
-const userInputHandler = new UserInputHandler(document.body, bell)
+const bellControls = new BellControls(bell, engine);
+const userInputHandler = new UserInputHandler(document.body, bell);
 
-userInputHandler.registerCallback((input) => bellControls.addForce(input))
+userInputHandler.registerCallback((input) => bellControls.addForce(input));
 
+let render: Render;
 
 onMounted(() => {
-
     //convert SVGs to Bodies
-    const bodies = Array.from(document.querySelectorAll<SVGPathElement>("svg > path")).map(path =>{
-         return Matter.Bodies.fromVertices(center.x, center.y, [Matter.Svg.pathToVertices(path, 15)], {}, true)})
+    const bodies = Array.from(document.querySelectorAll<SVGPathElement>("svg > path")).map((path) => {
+        return Matter.Bodies.fromVertices(center.x, center.y, [Matter.Svg.pathToVertices(path, 15)], {}, true);
+    });
 
     // create a renderer
-    const render = Render.create({
-        element: document.querySelector<HTMLElement>('#core')!,
+    render = Render.create({
+        element: document.querySelector<HTMLElement>("#core")!,
         engine: engine,
 
         options: {
@@ -61,14 +62,20 @@ onMounted(() => {
             showCollisions: true,
             showPerformance: true,
             showInternalEdges: true,
-            ...appDimensions
-        }
+            ...appDimensions,
+        },
     });
 
+    const camera = new Camera(bell, engine, render, appDimensions);
+
     // create ground + left and right mock terrain
-    const boxA = Bodies.rectangle(0, appDimensions.height, 80, appDimensions.height, {isStatic: true});
-    const boxB = Bodies.rectangle(appDimensions.width, appDimensions.height, 80, appDimensions.height, {isStatic: true});
-    const ground = Bodies.rectangle(appDimensions.width/2, appDimensions.height, appDimensions.width, 60, { isStatic: true });
+    const boxA = Bodies.rectangle(0, appDimensions.height, 80, appDimensions.height, { isStatic: true });
+    const boxB = Bodies.rectangle(appDimensions.width, appDimensions.height, 80, appDimensions.height, {
+        isStatic: true,
+    });
+    const ground = Bodies.rectangle(appDimensions.width / 2, appDimensions.height, appDimensions.width, 60, {
+        isStatic: true,
+    });
 
     // add all of the bodies to the world
     Composite.add(engine.world, [boxA, boxB, ground, bell, ...bodies]);
@@ -81,7 +88,7 @@ onMounted(() => {
 
     // run the engine
     Runner.run(runner, engine);
-})
+});
 </script>
 
 <template>
