@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import Matter, { Common, Render } from "matter-js";
-import { onMounted } from "vue";
+import Matter, { Mouse, Render } from "matter-js";
+/* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
+import { onMounted } from "vue";
+import SubMarine from "../assets/SubMarine.png";
 import { BellControls } from "../controls/bellControls";
+import { MouseInput } from "../controls/mouseInput";
 import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
-import SubMarine from "../assets/SubMarine.png";
 import "../utils/svgs";
 
 // module aliases
@@ -104,6 +106,12 @@ onMounted(() => {
     Bodies.fromSvg("/svg/Mediamodifier-Design.svg", 4, center.x, center.y, []).then((svg) =>
         Composite.add(engine.world, svg)
     );
+
+    var mouse = Mouse.create(render.canvas);
+    new MouseInput(mouse, bell, render);
+
+    // keep the mouse in sync with rendering
+    render.mouse = mouse;
 
     // run the renderer
     Render.run(render);
