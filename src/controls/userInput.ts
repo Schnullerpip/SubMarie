@@ -37,6 +37,7 @@ export class UserInputHandler {
             }
 
             const normalized = Vector.normalise(forces);
+            if (normalized.x === 0 && normalized.y === 0) return;
             this.notify(normalized);
         });
 
