@@ -22,8 +22,8 @@ const bellHoleCreator = (direction: Vector) => {
         render: {
             sprite: {
                 texture: HoleAsset,
-                xScale: 0.5,
-                yScale: 0.5,
+                xScale: 0.4,
+                yScale: 0.4,
             },
         },
     });

@@ -102,7 +102,7 @@ Events.on(engine, "collisionStart", (e) => {
     });
 });
 
-const bubbleObjectPool = new ObjectPool(bubbleCreator, 200);
+const bubbleObjectPool = new ObjectPool(bubbleCreator, 1000);
 
 const bell = Bodies.circle(3520, 7550, 80, {
     frictionAir: 0.03,
