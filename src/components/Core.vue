@@ -235,9 +235,9 @@ onMounted(() => {
     Composite.add(engine.world, terrainObject);
 
     const mouse = Mouse.create(render.canvas);
-    const mouseInput = new MouseInput(mouse, bell, render);
+    const mouseInput = new MouseInput(document.body, mouse, bell, render);
     userInputHandler.setMouseInput(mouseInput);
-    const cursor = new Cursor(mouse, bell, render, engine);
+    const cursor = new Cursor(mouseInput, bell, render, engine);
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;

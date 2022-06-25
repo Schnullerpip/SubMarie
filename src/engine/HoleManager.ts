@@ -9,7 +9,7 @@ type PositionedHole = {
 
 const bellHoleCreator = (direction: Vector) => {
     const reverseForceInput = Vector.mult(direction, -1);
-    const offset = Vector.mult(reverseForceInput, 72);
+    const offset = Vector.mult(reverseForceInput, 82);
     const rotationAngle = Math.atan2(reverseForceInput.y, reverseForceInput.x);
     const hole = Bodies.circle(-1000, -1000, 1, {
         inertia: Infinity,
