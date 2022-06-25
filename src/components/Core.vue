@@ -24,12 +24,15 @@ import { TERRAIN_1, TERRAIN_2 } from "../terrain";
 import HealthBar from "./HealthBar.vue";
 import { HealthBarHandler } from "../controls/healthBar";
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
+import { SoundPlayer } from "../utils/sound";
 
 /*
     REASONS for custom Renderer:
         - no gradients
         - no z-index of objects
 */
+// const soundPlayer = new SoundPlayer();
+// soundPlayer.play();
 
 // module aliases
 const Engine = Matter.Engine,
@@ -112,7 +115,7 @@ let bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
     frictionAir: 0.03,
     inertia: Infinity,
     inverseInertia: 0,
-    restitution: 2,
+    restitution: 1.4,
     render: {
         sprite: {
             texture: SubMarine,
@@ -213,30 +216,30 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
 
-    // Bodies.fromSvg("/svg/terrain-paths3.svg", 1, terrainCenter.x, 5400, [], {
-    //     collisionFilter: {
-    //         group: -2,
-    //         category: 2,
-    //         mask: -1,
-    //     },
-    //     isStatic: true,
-    // }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
+    Bodies.fromSvg("/svg/terrain-paths4.svg", 1, terrainCenter.x, 4000, [], {
+        collisionFilter: {
+            group: -2,
+            category: 2,
+            mask: -1,
+        },
+        isStatic: true,
+    }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
 
-    const terrainObject = TERRAIN_2.map((obj) =>
-        Bodies.fromVertices(
-            obj.position.x,
-            obj.position.y,
-            [obj.vertices.map((vector) => Vector.create(vector.x, vector.y))],
-            {
-                isStatic: true,
-                collisionFilter: {
-                    category: 2,
-                    mask: -1,
-                },
-            }
-        )
-    );
-    Composite.add(engine.world, terrainObject);
+    // const terrainObject = TERRAIN_2.map((obj) =>
+    //     Bodies.fromVertices(
+    //         obj.position.x,
+    //         obj.position.y,
+    //         [obj.vertices.map((vector) => Vector.create(vector.x, vector.y))],
+    //         {
+    //             isStatic: true,
+    //             collisionFilter: {
+    //                 category: 2,
+    //                 mask: -1,
+    //             },
+    //         }
+    //     )
+    // );
+    // Composite.add(engine.world, terrainObject);
 
     const mouse = Mouse.create(render.canvas);
     const mouseInput = new MouseInput(document.body, mouse, bell, render);

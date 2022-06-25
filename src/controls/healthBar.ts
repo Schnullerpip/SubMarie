@@ -12,8 +12,8 @@ export class HealthBarHandler {
 
     constructor(bellControls: BellControls, engine: Engine) {
         Events.on(engine, "afterUpdate", (e) => {
-            this.currentHealth.value -= bellControls.forces.length * 0.0005;
-            this.currentHealth.value -= 0.002;
+            this.currentHealth.value -= bellControls.forces.length * 0.0025;
+            this.currentHealth.value -= 0.01;
 
             if (this.currentHealth.value <= 0) {
                 this.currentHealth.value = 0;
