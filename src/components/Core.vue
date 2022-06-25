@@ -19,7 +19,7 @@ import Bubble03 from "../assets/bubble-03.png";
 import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
-import { TERRAIN } from "../terrain";
+import { TERRAIN_1, TERRAIN_2 } from "../terrain";
 import HealthBar from "./HealthBar.vue";
 import { HealthBarHandler } from "../controls/healthBar";
 
@@ -156,7 +156,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, screenDimensions);
+    new Camera(bell, engine, render, terrainDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -177,23 +177,20 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
 
-    // Bodies.fromSvg("/svg/terrain-objects/terrain07.svg", 1, terrainCenter.x, -1000, [], {
+    // Bodies.fromSvg("/svg/terrain-left-wall.svg", 1, terrainCenter.x, 0, [], {
     //     collisionFilter: {
     //         category: -1,
     //         mask: 12,
     //         group: 33,
     //     },
-    // }).then((svg) => Composite.add(engine.world, svg));
+    // }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
 
-    const terrainBody = Bodies.fromVertices(terrainCenter.x, terrainCenter.y, TERRAIN.walls, {
-        isStatic: true,
-    });
-    const terrainObject = TERRAIN.objects.map((obj) =>
+    const terrainObject = TERRAIN_2.map((obj) =>
         Bodies.fromVertices(obj.position.x, obj.position.y, obj.vertices, {
             isStatic: true,
         })
     );
-    Composite.add(engine.world, [terrainBody, ...terrainObject]);
+    Composite.add(engine.world, terrainObject);
 
     const mouse = Mouse.create(render.canvas);
     const mouseInput = new MouseInput(mouse, bell, render);
