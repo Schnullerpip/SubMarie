@@ -2,13 +2,13 @@ export class ObjectPool<T> {
     private objects: (T | undefined)[] = [];
     private idx = 0;
 
-    constructor(private readonly creator: (idx: number) => T, private readonly limit = 30) {}
+    constructor(private readonly creator: (...args: any[]) => T, private readonly limit = 30) {}
 
-    getInstance(): T {
+    getInstance(...args: any[]): T {
         const result =
             this.objects[this.idx] ??
             (() => {
-                const newInstance = this.creator(this.idx);
+                const newInstance = this.creator(args);
                 this.objects[this.idx] = newInstance;
                 return newInstance;
             })();

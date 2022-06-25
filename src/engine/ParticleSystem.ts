@@ -12,7 +12,7 @@ export class ParticleSystem<T extends Particle> {
         private readonly engine: Engine,
         private readonly pool: ObjectPool<T>,
         private readonly initializer: (instance: T) => void,
-        private readonly rate = 0.25,
+        private readonly rate = 0.15,
         private readonly lifeTime = 2
     ) {
         Events.on(engine, "beforeUpdate", (event) => {
