@@ -12,6 +12,7 @@ import { Particle, ParticleSystem } from "../engine/ParticleSystem";
 import { HoleManager } from "../engine/HoleManager";
 import { Cursor } from "../engine/Cursor";
 import "../utils/svgs";
+import { Station } from "../engine/Station";
 
 import SubMarine from "../assets/SubMarine.png";
 import Bubble01 from "../assets/bubble-01.png";
@@ -107,7 +108,7 @@ const bubbleObjectPool = new ObjectPool(bubbleCreator, 1000);
 const bellStartPosition = {
     x: 3520,
     y: 7550,
-};
+} as const;
 let bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
     frictionAir: 0.03,
     inertia: Infinity,
@@ -241,6 +242,13 @@ onMounted(() => {
     const mouseInput = new MouseInput(document.body, mouse, bell, render);
     userInputHandler.setMouseInput(mouseInput);
     const cursor = new Cursor(mouseInput, bell, render, engine);
+
+    const station = new Station(Vector.create(bellStartPosition.x, bellStartPosition.y - 1), engine, bell, () => {
+        holeManager.reset();
+        bellControls.reset();
+        particleSystems.forEach((ps) => ps.clear());
+        particleSystems.splice(0, particleSystems.length);
+    });
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
