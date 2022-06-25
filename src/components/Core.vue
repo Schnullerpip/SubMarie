@@ -247,8 +247,18 @@ onMounted(() => {
     const station = new Station(Vector.create(bellStartPosition.x, bellStartPosition.y - 1), engine, bell, () => {
         holeManager.reset();
         bellControls.reset();
-        particleSystems.forEach((ps) => ps.clear());
-        particleSystems.splice(0, particleSystems.length);
+        particleSystems.forEach((ps) => {
+            ps.stop();
+        });
+
+        const numSystems = particleSystems.length;
+
+        window.setTimeout(() => {
+            for (let i = 0; i < numSystems; ++i) {
+                particleSystems[i]?.clear();
+            }
+            particleSystems.splice(0, numSystems);
+        }, 2000);
     });
 
     // keep the mouse in sync with rendering
