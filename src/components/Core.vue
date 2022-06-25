@@ -100,7 +100,7 @@ Events.on(engine, "collisionStart", (e) => {
     });
 });
 
-const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
+const bubbleObjectPool = new ObjectPool(bubbleCreator, 200);
 
 const bell = Bodies.circle(3520, 7550, 80, {
     frictionAir: 0.03,
@@ -158,10 +158,10 @@ onMounted(() => {
         engine: engine,
 
         options: {
-            showCollisions: true,
             showPerformance: true,
+            showCollisions: false,
             wireframes: false,
-            showBounds: true,
+            showBounds: false,
             ...screenDimensions,
         },
     });

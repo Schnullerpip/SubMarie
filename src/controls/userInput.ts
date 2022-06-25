@@ -40,12 +40,17 @@ export class UserInputHandler {
             this.notify(normalized);
         });
 
-        root.addEventListener("click", (event: Event) => {
-            if (!this.mouseInput) return;
-            const vector = this.mouseInput.getVector();
-            const normalized = Vector.normalise(vector);
-            this.notify(normalized);
-        });
+        const handleClick = () => {
+            setTimeout(() => {
+                if (!this.mouseInput) return;
+                const vector = this.mouseInput.getVector();
+                const normalized = Vector.normalise(vector);
+                this.notify(normalized);
+            }, 0);
+        };
+
+        root.addEventListener("click", (event: Event) => handleClick());
+        root.addEventListener("touchstart", (event: Event) => handleClick());
     }
 
     registerCallback(cb: UserInputListener) {
