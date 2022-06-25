@@ -104,7 +104,11 @@ Events.on(engine, "collisionStart", (e) => {
 
 const bubbleObjectPool = new ObjectPool(bubbleCreator, 1000);
 
-const bell = Bodies.circle(3520, 7550, 80, {
+const bellStartPosition = {
+    x: 3520,
+    y: 7550,
+};
+let bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
     frictionAir: 0.03,
     inertia: Infinity,
     inverseInertia: 0,
@@ -120,8 +124,26 @@ const bell = Bodies.circle(3520, 7550, 80, {
 
 const bellControls = new BellControls(bell, engine);
 const userInputHandler = new UserInputHandler(document.body, bell);
-const healthBar = new HealthBarHandler(bellControls, engine);
 const holeManager = new HoleManager(bell, engine);
+const healthBar = new HealthBarHandler(bellControls, engine);
+
+//on oxygen empty
+healthBar.register(() => {
+    userInputHandler.enabled = false;
+    particleSystems.forEach((ps) => {
+        ps.stop();
+    });
+
+    window.setTimeout(() => {
+        bellControls.reset();
+        particleSystems.forEach((ps) => ps.clear());
+        particleSystems.splice(0, particleSystems.length);
+        holeManager.reset();
+        healthBar.reset();
+        Body.setPosition(bell, Vector.create(bellStartPosition.x, bellStartPosition.y));
+        userInputHandler.enabled = true;
+    }, 2000);
+});
 
 const particleSystems: ParticleSystem<Particle>[] = [];
 
