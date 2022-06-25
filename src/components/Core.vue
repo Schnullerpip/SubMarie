@@ -18,6 +18,15 @@ import Bubble03 from "../assets/bubble-03.png";
 import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
+import { TERRAIN } from "../terrain";
+import HealthBar from "./HealthBar.vue";
+import { HealthBarHandler } from "../controls/healthBar";
+
+/*
+    REASONS for custom Renderer:
+        - no gradients
+        - no z-index of objects
+*/
 
 // module aliases
 const Engine = Matter.Engine,
@@ -35,14 +44,22 @@ const engine = Engine.create({
     },
 });
 
-const appDimensions = {
+const screenDimensions = {
     width: 1080,
     height: 1920,
 };
+const screenCenter = {
+    x: screenDimensions.width / 2,
+    y: screenDimensions.height / 2,
+};
 
-const center = {
-    x: appDimensions.width / 2,
-    y: appDimensions.height / 2,
+const terrainDimensions = {
+    width: 6971,
+    height: 7610,
+};
+const terrainCenter = {
+    x: terrainDimensions.width / 2,
+    y: terrainDimensions.height / 2,
 };
 
 const bubbleAssets = [Bubble01, Bubble02, Bubble03, Bubble04, Bubble05, Bubble06];
@@ -75,7 +92,7 @@ const bubbleCreator = () => {
 
 const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
 
-const bell = Bodies.circle(center.x, appDimensions.height - 260, 100, {
+const bell = Bodies.circle(3520, 7550, 80, {
     frictionAir: 0.03,
     inertia: Infinity,
     inverseInertia: 0,
@@ -83,14 +100,15 @@ const bell = Bodies.circle(center.x, appDimensions.height - 260, 100, {
     render: {
         sprite: {
             texture: SubMarine,
-            yScale: 0.5,
-            xScale: 0.5,
+            yScale: 0.4,
+            xScale: 0.4,
         },
     },
 });
 
 const bellControls = new BellControls(bell, engine);
 const userInputHandler = new UserInputHandler(document.body, bell);
+const healthBar = new HealthBarHandler(bellControls, engine);
 
 const particleSystems: ParticleSystem<Body>[] = [];
 
@@ -128,18 +146,18 @@ onMounted(() => {
             showPerformance: true,
             wireframes: false,
             showBounds: true,
-            ...appDimensions,
+            ...screenDimensions,
         },
     });
 
-    new Camera(bell, engine, render, appDimensions);
+    new Camera(bell, engine, render, screenDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
-        center.x * -1,
-        center.y * -4,
-        appDimensions.width * 4,
-        appDimensions.height * 10,
+        terrainCenter.x,
+        terrainCenter.y,
+        terrainDimensions.width,
+        terrainDimensions.height * 1.5,
         {
             collisionFilter: {
                 group: -1,
@@ -149,20 +167,27 @@ onMounted(() => {
             render: { fillStyle: "midnightblue" },
         }
     );
-    const wallLeft = Bodies.rectangle(0, appDimensions.height * -4, 80, appDimensions.height * 10, { isStatic: true });
-    const wallRight = Bodies.rectangle(appDimensions.width, appDimensions.height * -4, 80, appDimensions.height * 10, {
-        isStatic: true,
-    });
-    const ground = Bodies.rectangle(appDimensions.width / 2, appDimensions.height, appDimensions.width, 60, {
-        isStatic: true,
-    });
 
     // add all of the bodies to the world
-    Composite.add(engine.world, [background, wallLeft, wallRight, ground, bell]);
+    Composite.add(engine.world, [background, bell]);
 
-    // Bodies.fromSvg("/svg/Mediamodifier-Design.svg", 4, center.x, center.y, []).then((svg) =>
-    //     Composite.add(engine.world, svg)
-    // );
+    // Bodies.fromSvg("/svg/terrain-objects/terrain07.svg", 1, terrainCenter.x, -1000, [], {
+    //     collisionFilter: {
+    //         category: -1,
+    //         mask: 12,
+    //         group: 33,
+    //     },
+    // }).then((svg) => Composite.add(engine.world, svg));
+
+    const terrainBody = Bodies.fromVertices(terrainCenter.x, terrainCenter.y, TERRAIN.walls, {
+        isStatic: true,
+    });
+    const terrainObject = TERRAIN.objects.map((obj) =>
+        Bodies.fromVertices(obj.position.x, obj.position.y, obj.vertices, {
+            isStatic: true,
+        })
+    );
+    Composite.add(engine.world, [terrainBody, ...terrainObject]);
 
     const mouse = Mouse.create(render.canvas);
     const mouseInput = new MouseInput(mouse, bell, render);
@@ -183,12 +208,28 @@ onMounted(() => {
 </script>
 
 <template>
-    <div id="core"></div>
+    <div class="wrapper">
+        <div id="core"></div>
+        <div class="health-bar">
+            <HealthBar :health="healthBar.health.value" />
+        </div>
+    </div>
 </template>
 
 <style>
+.wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
 canvas {
     height: 100vh;
     object-fit: contain;
+}
+.health-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 </style>
