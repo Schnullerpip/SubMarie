@@ -242,18 +242,19 @@ onMounted(() => {
 
 <style>
 .wrapper {
-    width: 100vw;
-    height: 100vh;
+    width: fit-content;
+    height: 90vh;
     position: relative;
 }
 canvas {
-    height: 100vh;
+    height: 90vh;
     object-fit: contain;
 }
 .health-bar {
     position: absolute;
     bottom: 20px;
+    width: 80%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) scale(1.2);
 }
 </style>
