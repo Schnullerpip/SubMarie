@@ -131,7 +131,7 @@ const moveBell = (direction: Vector) => {
     //move the bell
     bellControls.addForce(direction);
 
-    //TODO add visible hole in the bell
+    //add visible hole in the bell
     holeManager.createHole(direction);
 
     //add bubble-particle system
@@ -139,7 +139,7 @@ const moveBell = (direction: Vector) => {
         new ParticleSystem(engine, bubbleObjectPool, (instance) => {
             const reverseForceInput = Vector.mult(direction, -1);
             const orthogonalForce = Vector.mult(
-                Vector.create(reverseForceInput.y, reverseForceInput.y),
+                Vector.create(reverseForceInput.y, reverseForceInput.x),
                 (Math.random() - 0.5) * 0.4
             );
             Body.setPosition(instance, Vector.add(bell.position, Vector.mult(reverseForceInput, 80)));
