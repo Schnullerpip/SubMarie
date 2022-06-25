@@ -1,4 +1,5 @@
-import Matter from "matter-js";
+import Matter, { Vector } from "matter-js";
+import { MouseInput } from "./mouseInput";
 
 //normalized vector that pointsfrom the unit circles origin to its surface point
 type UserInput = Matter.Vector;
@@ -7,6 +8,7 @@ type UserInputListener = (input: UserInput) => void;
 
 export class UserInputHandler {
     private listeners: UserInputListener[] = [];
+    private mouseInput: MouseInput | null = null;
 
     /**
      * @param referencePosition the reference to a position that the UserInputHandler can compare to a mouse/touch event
@@ -34,17 +36,24 @@ export class UserInputHandler {
                 forces.x += 1;
             }
 
-            const normalized = Matter.Vector.normalise(forces);
+            const normalized = Vector.normalise(forces);
             this.notify(normalized);
         });
 
         root.addEventListener("click", (event: Event) => {
-            console.debug("TODO - NO CLICK HANDLING IMPLEMENTED YET ToT");
+            if (!this.mouseInput) return;
+            const vector = this.mouseInput.getVector();
+            const normalized = Vector.normalise(vector);
+            this.notify(normalized);
         });
     }
 
     registerCallback(cb: UserInputListener) {
         this.listeners.push(cb);
+    }
+
+    setMouseInput(input: MouseInput): void {
+        this.mouseInput = input;
     }
 
     private notify(input: UserInput) {

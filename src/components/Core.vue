@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Matter, { Mouse, Body, Common, Render, Vector } from "matter-js";
+import Matter, { Mouse, Body, Render, Vector, MouseConstraint } from "matter-js";
 import { onMounted } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
@@ -7,6 +7,9 @@ import { BellControls } from "../controls/bellControls";
 import { MouseInput } from "../controls/mouseInput";
 import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
+import { ObjectPool } from "../engine/ObjectPool";
+import { ParticleSystem } from "../engine/ParticleSystem";
+import "../utils/svgs";
 
 import SubMarine from "../assets/SubMarine.png";
 import Bubble01 from "../assets/bubble-01.png";
@@ -15,9 +18,6 @@ import Bubble03 from "../assets/bubble-03.png";
 import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
-import { ObjectPool } from "../engine/ObjectPool";
-import { ParticleSystem } from "../engine/ParticleSystem";
-import "../utils/svgs";
 
 // module aliases
 const Engine = Matter.Engine,
@@ -68,14 +68,14 @@ const bubbleCreator = () => {
         },
     });
 
-    Body.applyForce(bubble, bubble.position, Vector.create(0, -0.003));
+    // Body.applyForce(bubble, bubble.position, Vector.create(0, -0.003));
 
     return bubble;
 };
 
 const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
 
-const bell = Bodies.circle(center.x, appDimensions.height - 60, 100, {
+const bell = Bodies.circle(center.x, appDimensions.height - 260, 100, {
     frictionAir: 0.03,
     inertia: Infinity,
     inverseInertia: 0,
@@ -106,7 +106,7 @@ const moveBell = (direction: Vector) => {
             const reverseForceInput = Vector.mult(direction, -1);
             const orthogonalForce = Vector.mult(
                 Vector.create(reverseForceInput.y, reverseForceInput.y),
-                (Math.random() - 0.5) * 2 * 0.2
+                (Math.random() - 0.5) * 0.4
             );
             Body.setPosition(instance, Vector.add(bell.position, Vector.mult(reverseForceInput, 50)));
             Body.setVelocity(instance, Vector.mult(Vector.add(reverseForceInput, orthogonalForce), 3));
@@ -146,7 +146,7 @@ onMounted(() => {
                 category: 2,
                 mask: 0,
             },
-            render: { fillStyle: "lightblue" },
+            render: { fillStyle: "midnightblue" },
         }
     );
     const wallLeft = Bodies.rectangle(0, appDimensions.height * -4, 80, appDimensions.height * 10, { isStatic: true });
@@ -160,12 +160,13 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, wallLeft, wallRight, ground, bell]);
 
-    Bodies.fromSvg("/svg/Mediamodifier-Design.svg", 4, center.x, center.y, []).then((svg) =>
-        Composite.add(engine.world, svg)
-    );
+    // Bodies.fromSvg("/svg/Mediamodifier-Design.svg", 4, center.x, center.y, []).then((svg) =>
+    //     Composite.add(engine.world, svg)
+    // );
 
-    var mouse = Mouse.create(render.canvas);
-    new MouseInput(mouse, bell, render);
+    const mouse = Mouse.create(render.canvas);
+    const mouseInput = new MouseInput(mouse, bell, render);
+    userInputHandler.setMouseInput(mouseInput);
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;

@@ -1,7 +1,7 @@
-import { Render, Events, Mouse, Body } from "matter-js";
+import { Render, Events, Mouse, Body, Vector } from "matter-js";
 
 export class MouseInput {
-    constructor(mouse: Mouse, bell: Body, render: Render) {
+    constructor(private mouse: Mouse, private bell: Body, render: Render) {
         Events.on(render, "afterRender", (e) => {
             var context = render.context,
                 endPoint = mouse.position;
@@ -19,5 +19,12 @@ export class MouseInput {
             // @ts-ignore
             Render.endViewTransform(render);
         });
+    }
+
+    public getVector(): Vector {
+        return Vector.create(
+            this.bell.position.x - this.mouse.position.x,
+            this.bell.position.y - this.mouse.position.y
+        );
     }
 }
