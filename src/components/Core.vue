@@ -10,6 +10,7 @@ import { Camera } from "../utils/camera";
 import { ObjectPool } from "../engine/ObjectPool";
 import { Particle, ParticleSystem } from "../engine/ParticleSystem";
 import { HoleManager } from "../engine/HoleManager";
+import { Cursor } from "../engine/Cursor";
 import "../utils/svgs";
 
 import SubMarine from "../assets/SubMarine.png";
@@ -22,6 +23,7 @@ import Bubble06 from "../assets/bubble-06.png";
 import { TERRAIN_1, TERRAIN_2 } from "../terrain";
 import HealthBar from "./HealthBar.vue";
 import { HealthBarHandler } from "../controls/healthBar";
+import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 
 /*
     REASONS for custom Renderer:
@@ -213,6 +215,7 @@ onMounted(() => {
     const mouse = Mouse.create(render.canvas);
     const mouseInput = new MouseInput(mouse, bell, render);
     userInputHandler.setMouseInput(mouseInput);
+    const cursor = new Cursor(mouse, bell, render, engine);
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
