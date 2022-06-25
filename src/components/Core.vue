@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import Matter, { Mouse, Render } from "matter-js";
+import Matter, { Mouse, Body, Common, Render, Vector } from "matter-js";
+import { onMounted } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
-import { onMounted } from "vue";
-import SubMarine from "../assets/SubMarine.png";
 import { BellControls } from "../controls/bellControls";
 import { MouseInput } from "../controls/mouseInput";
 import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
+
+import SubMarine from "../assets/SubMarine.png";
+import Bubble01 from "../assets/bubble-01.png";
+import Bubble02 from "../assets/bubble-02.png";
+import Bubble03 from "../assets/bubble-03.png";
+import Bubble04 from "../assets/bubble-04.png";
+import Bubble05 from "../assets/bubble-05.png";
+import Bubble06 from "../assets/bubble-06.png";
+import { ObjectPool } from "../engine/ObjectPool";
+import { ParticleSystem } from "../engine/ParticleSystem";
 import "../utils/svgs";
 
 // module aliases
@@ -36,6 +45,36 @@ const center = {
     y: appDimensions.height / 2,
 };
 
+const bubbleAssets = [Bubble01, Bubble02, Bubble03, Bubble04, Bubble05, Bubble06];
+const getRandomBubbleAsset = () => {
+    const randIdx = Math.ceil(Math.random() * 5);
+    return bubbleAssets[randIdx];
+};
+
+const bubbleCreator = () => {
+    const randomScale = Math.random() * 0.1;
+    const bubble = Bodies.circle(0, 0, 10, {
+        collisionFilter: {
+            group: -1,
+            category: 0,
+            mask: 0,
+        },
+        render: {
+            sprite: {
+                texture: getRandomBubbleAsset(),
+                xScale: randomScale,
+                yScale: randomScale,
+            },
+        },
+    });
+
+    Body.applyForce(bubble, bubble.position, Vector.create(0, -0.003));
+
+    return bubble;
+};
+
+const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
+
 const bell = Bodies.circle(center.x, appDimensions.height - 60, 100, {
     frictionAir: 0.03,
     inertia: Infinity,
@@ -53,7 +92,28 @@ const bell = Bodies.circle(center.x, appDimensions.height - 60, 100, {
 const bellControls = new BellControls(bell, engine);
 const userInputHandler = new UserInputHandler(document.body, bell);
 
-userInputHandler.registerCallback((input) => bellControls.addForce(input));
+const particleSystems: ParticleSystem<Body>[] = [];
+
+userInputHandler.registerCallback((inputForce) => {
+    moveBell(inputForce);
+});
+
+const moveBell = (direction: Vector) => {
+    bellControls.addForce(direction);
+
+    particleSystems.push(
+        new ParticleSystem(engine, bubbleObjectPool, (instance) => {
+            const reverseForceInput = Vector.mult(direction, -1);
+            const orthogonalForce = Vector.mult(
+                Vector.create(reverseForceInput.y, reverseForceInput.y),
+                (Math.random() - 0.5) * 2 * 0.2
+            );
+            Body.setPosition(instance, Vector.add(bell.position, Vector.mult(reverseForceInput, 50)));
+            Body.setVelocity(instance, Vector.mult(Vector.add(reverseForceInput, orthogonalForce), 3));
+            Body.setAngularVelocity(instance, 0.001);
+        })
+    );
+};
 
 let render: Render;
 
@@ -64,11 +124,8 @@ onMounted(() => {
         engine: engine,
 
         options: {
-            showAxes: true,
-            showIds: true,
             showCollisions: true,
             showPerformance: true,
-            showInternalEdges: true,
             wireframes: false,
             showBounds: true,
             ...appDimensions,
