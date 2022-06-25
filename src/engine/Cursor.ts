@@ -25,7 +25,7 @@ export class Cursor {
         Events.on(render, "beforeRender", () => {
             cursor.render.visible = mouse.cursorVisible;
             const cursorDirection = Vector.neg(mouse.getVector());
-            const cursorPosition = Vector.add(bell.position, Vector.mult(cursorDirection, 72));
+            const cursorPosition = Vector.add(bell.position, Vector.mult(cursorDirection, 78));
             Body.setPosition(cursor, cursorPosition);
         });
     }
