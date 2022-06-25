@@ -210,12 +210,13 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
 
-    // Bodies.fromSvg("/svg/terrain-2/terrain-center-2.svg", 1, terrainCenter.x, 0, [], {
+    // Bodies.fromSvg("/svg/terrain-paths3.svg", 1, terrainCenter.x, 5400, [], {
     //     collisionFilter: {
-    //         category: -1,
-    //         mask: 12,
-    //         group: 33,
+    //         group: -2,
+    //         category: 2,
+    //         mask: -1,
     //     },
+    //     isStatic: true,
     // }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
 
     const terrainObject = TERRAIN_2.map((obj) =>
