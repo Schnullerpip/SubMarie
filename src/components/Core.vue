@@ -9,6 +9,7 @@ import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
 import { ObjectPool } from "../engine/ObjectPool";
 import { ParticleSystem } from "../engine/ParticleSystem";
+import { HoleManager } from "../engine/HoleManager";
 import "../utils/svgs";
 
 import SubMarine from "../assets/SubMarine.png";
@@ -89,7 +90,6 @@ const bubbleCreator = () => {
 
     return bubble;
 };
-
 const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
 
 const bell = Bodies.circle(3520, 7550, 80, {
@@ -109,6 +109,7 @@ const bell = Bodies.circle(3520, 7550, 80, {
 const bellControls = new BellControls(bell, engine);
 const userInputHandler = new UserInputHandler(document.body, bell);
 const healthBar = new HealthBarHandler(bellControls, engine);
+const holeManager = new HoleManager(bell, engine);
 
 const particleSystems: ParticleSystem<Body>[] = [];
 
@@ -117,8 +118,13 @@ userInputHandler.registerCallback((inputForce) => {
 });
 
 const moveBell = (direction: Vector) => {
+    //move the bell
     bellControls.addForce(direction);
 
+    //TODO add visible hole in the bell
+    holeManager.createHole(direction);
+
+    //add bubble-particle system
     particleSystems.push(
         new ParticleSystem(engine, bubbleObjectPool, (instance) => {
             const reverseForceInput = Vector.mult(direction, -1);
@@ -126,7 +132,7 @@ const moveBell = (direction: Vector) => {
                 Vector.create(reverseForceInput.y, reverseForceInput.y),
                 (Math.random() - 0.5) * 0.4
             );
-            Body.setPosition(instance, Vector.add(bell.position, Vector.mult(reverseForceInput, 50)));
+            Body.setPosition(instance, Vector.add(bell.position, Vector.mult(reverseForceInput, 80)));
             Body.setVelocity(instance, Vector.mult(Vector.add(reverseForceInput, orthogonalForce), 3));
             Body.setAngularVelocity(instance, 0.001);
         })
