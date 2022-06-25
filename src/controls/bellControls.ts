@@ -1,6 +1,6 @@
 import { Body, Engine, Events, Vector } from "matter-js";
 
-const drag = 0.1;
+const drag = 0.25;
 
 export class BellControls {
     private accumulatedForce!: Vector;
