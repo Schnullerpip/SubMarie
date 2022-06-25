@@ -135,6 +135,9 @@ healthBar.register(() => {
     });
 
     window.setTimeout(() => {
+        if (healthBar.health.value > 0) {
+            return;
+        }
         bellControls.reset();
         particleSystems.forEach((ps) => ps.clear());
         particleSystems.splice(0, particleSystems.length);
