@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Matter, { Mouse, Body, Render, Vector } from "matter-js";
+import Matter, { Mouse, Body, Render, Vector, Events } from "matter-js";
 import { onMounted } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
@@ -8,7 +8,7 @@ import { MouseInput } from "../controls/mouseInput";
 import { UserInputHandler } from "../controls/userInput";
 import { Camera } from "../utils/camera";
 import { ObjectPool } from "../engine/ObjectPool";
-import { ParticleSystem } from "../engine/ParticleSystem";
+import { Particle, ParticleSystem } from "../engine/ParticleSystem";
 import "../utils/svgs";
 
 import SubMarine from "../assets/SubMarine.png";
@@ -83,14 +83,23 @@ const bubbleCreator = () => {
                 yScale: randomScale,
             },
         },
+        label: "bubble",
     });
+    (bubble as Particle).age = 0;
 
     // Body.applyForce(bubble, bubble.position, Vector.create(0, -0.003));
 
-    return bubble;
+    return bubble as Particle;
 };
 
-const bubbleObjectPool = new ObjectPool(bubbleCreator, 800);
+Events.on(engine, "collisionStart", (e) => {
+    e.pairs.forEach(({ bodyA, bodyB }) => {
+        if (bodyA.label === "bubble") (bodyA as Particle).age = 1.7;
+        if (bodyB.label === "bubble") (bodyB as Particle).age = 1.7;
+    });
+});
+
+const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
 
 const bell = Bodies.circle(3520, 7550, 80, {
     frictionAir: 0.03,
@@ -110,7 +119,7 @@ const bellControls = new BellControls(bell, engine);
 const userInputHandler = new UserInputHandler(document.body, bell);
 const healthBar = new HealthBarHandler(bellControls, engine);
 
-const particleSystems: ParticleSystem<Body>[] = [];
+const particleSystems: ParticleSystem<Particle>[] = [];
 
 userInputHandler.registerCallback((inputForce) => {
     moveBell(inputForce);

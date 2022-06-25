@@ -1,11 +1,12 @@
 import { Body, Composite, Engine, Events } from "matter-js";
 import { ObjectPool } from "./ObjectPool";
 
-export class ParticleSystem<T extends Body> {
-    private particles: {
-        age: number;
-        instance: T;
-    }[] = [];
+export interface Particle extends Body {
+    age: number;
+}
+
+export class ParticleSystem<T extends Particle> {
+    private particles: T[] = [];
 
     constructor(
         private readonly engine: Engine,
@@ -30,7 +31,7 @@ export class ParticleSystem<T extends Body> {
     private killOldParticles(deltaTime: number) {
         this.particles.forEach((particle, i) => {
             if ((particle.age += deltaTime) >= this.lifeTime) {
-                Composite.remove(this.engine.world, particle.instance);
+                Composite.remove(this.engine.world, particle);
                 this.particles.splice(i, 1);
             }
         });
@@ -43,13 +44,11 @@ export class ParticleSystem<T extends Body> {
             if ((timeSinceLastBirth += deltaTime) >= this.rate) {
                 timeSinceLastBirth = 0;
                 const instance = this.pool.getInstance();
+                instance.age = 0;
                 this.initializer(instance);
                 Composite.add(this.engine.world, instance);
 
-                this.particles.push({
-                    age: 0,
-                    instance,
-                });
+                this.particles.push(instance);
             }
         };
     })();
