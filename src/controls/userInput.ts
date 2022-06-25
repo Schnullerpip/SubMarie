@@ -10,11 +10,16 @@ export class UserInputHandler {
     private listeners: UserInputListener[] = [];
     private mouseInput: MouseInput | null = null;
 
+    public enabled = true;
+
     /**
      * @param referencePosition the reference to a position that the UserInputHandler can compare to a mouse/touch event
      */
     constructor(root: Element, private readonly referencePosition: { position: Matter.Vector }) {
         root.addEventListener("keydown", (event: Event) => {
+            if (!this.enabled) {
+                return;
+            }
             const keyEvent = event as KeyboardEvent;
             const key = keyEvent.key;
 
@@ -42,6 +47,9 @@ export class UserInputHandler {
         });
 
         const handleClick = () => {
+            if (!this.enabled) {
+                return;
+            }
             setTimeout(() => {
                 if (!this.mouseInput) return;
                 this.notify(this.mouseInput.getVector());
