@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Matter, { Mouse, Body, Render, Vector, MouseConstraint } from "matter-js";
+import Matter, { Mouse, Body, Render, Vector } from "matter-js";
 import { onMounted } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
@@ -73,8 +73,8 @@ const bubbleCreator = () => {
     const bubble = Bodies.circle(0, 0, 10, {
         collisionFilter: {
             group: -1,
-            category: 0,
-            mask: 0,
+            category: 4,
+            mask: 2,
         },
         render: {
             sprite: {
@@ -90,7 +90,7 @@ const bubbleCreator = () => {
     return bubble;
 };
 
-const bubbleObjectPool = new ObjectPool(bubbleCreator, 400);
+const bubbleObjectPool = new ObjectPool(bubbleCreator, 800);
 
 const bell = Bodies.circle(3520, 7550, 80, {
     frictionAir: 0.03,
@@ -150,7 +150,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, terrainDimensions);
+    new Camera(bell, engine, render, screenDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -160,8 +160,7 @@ onMounted(() => {
         terrainDimensions.height * 1.5,
         {
             collisionFilter: {
-                group: -1,
-                category: 2,
+                category: 0,
                 mask: 0,
             },
             render: { fillStyle: "midnightblue" },
@@ -171,7 +170,7 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
 
-    // Bodies.fromSvg("/svg/terrain-left-wall.svg", 1, terrainCenter.x, 0, [], {
+    // Bodies.fromSvg("/svg/terrain-2/terrain-center-2.svg", 1, terrainCenter.x, 0, [], {
     //     collisionFilter: {
     //         category: -1,
     //         mask: 12,
@@ -180,9 +179,18 @@ onMounted(() => {
     // }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
 
     const terrainObject = TERRAIN_2.map((obj) =>
-        Bodies.fromVertices(obj.position.x, obj.position.y, obj.vertices, {
-            isStatic: true,
-        })
+        Bodies.fromVertices(
+            obj.position.x,
+            obj.position.y,
+            [obj.vertices.map((vector) => Vector.create(vector.x, vector.y))],
+            {
+                isStatic: true,
+                collisionFilter: {
+                    category: 2,
+                    mask: -1,
+                },
+            }
+        )
     );
     Composite.add(engine.world, terrainObject);
 
