@@ -254,7 +254,6 @@ onMounted(() => {
         engine: engine,
 
         options: {
-            showPerformance: true,
             showCollisions: false,
             wireframes: false,
             showBounds: false,
@@ -355,6 +354,7 @@ onMounted(() => {
     ].map(
         (vector) =>
             new Station(Vector.create(vector.x, vector.y + 300), engine, bell, () => {
+                soundPlayer.playSfx("vroot-vroot");
                 holeManager.reset();
                 bellControls.reset();
                 particleSystems.forEach((ps) => {
@@ -405,14 +405,14 @@ onMounted(() => {
 <style>
 .wrapper {
     width: fit-content;
-    height: 90vh;
+    height: 100vh;
     position: relative;
 }
 
 #matter-canvas,
 #three-canvas {
     position: relative;
-    height: 90vh !important;
+    height: 100vh !important;
     object-fit: contain;
 }
 
