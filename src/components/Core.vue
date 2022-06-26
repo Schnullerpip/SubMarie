@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Matter, { Mouse, Body, Render, Vector, Events } from "matter-js";
+import Matter, { Mouse, Body, Render, Vector, Events, Common } from "matter-js";
 import { onMounted, ref } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
@@ -27,7 +27,7 @@ import HealthBar from "./HealthBar.vue";
 import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
 import { TERRAIN_1, TERRAIN_2, TERRAIN_3 } from "../terrain";
-import { SoundPlayer } from "../utils/sound";
+import { Sound, SoundPlayer } from "../utils/sound";
 import WonRepresentation from "./WonRepresentation.vue";
 import SubMarie from "./SubMarie.vue";
 
@@ -36,8 +36,7 @@ import SubMarie from "./SubMarie.vue";
         - no gradients
         - no z-index of objects
 */
-// const soundPlayer = new SoundPlayer();
-// soundPlayer.play();
+const soundPlayer = new SoundPlayer();
 
 // module aliases
 const Engine = Matter.Engine,
@@ -118,7 +117,7 @@ const bellStartPosition = {
     x: 3294,
     y: 9367,
 } as const;
-let bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
+const bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
     friction: 0.07,
     frictionAir: 0.03,
     inertia: Infinity,
@@ -133,13 +132,28 @@ let bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
     },
 });
 
-const bellControls = new BellControls(bell, engine);
+Events.on(engine, "collisionStart", (event) => {
+    for (const pair of event.pairs) {
+        if (
+            (pair.bodyA === bell && pair.bodyB.label === "terrain") ||
+            (pair.bodyB === bell && pair.bodyB.label === "terrain")
+        ) {
+            soundPlayer.playSfx("hit_fast");
+        }
+    }
+});
+
+const bellControls = new BellControls(bell, engine, soundPlayer);
 const userInputHandler = new UserInputHandler(document.body, bell);
 const holeManager = new HoleManager(bell, engine);
-const healthBar = new HealthBarHandler(bellControls, engine);
+const healthBar = new HealthBarHandler(bellControls, engine, soundPlayer);
 
-//on oxygen empty
+//on oxygen empty, game over
 healthBar.register(() => {
+    soundPlayer.stopAllSfx();
+    soundPlayer.stopAmbient();
+    soundPlayer.playSfx("game_over");
+
     userInputHandler.enabled = false;
     particleSystems.forEach((ps) => {
         ps.stop();
@@ -159,7 +173,8 @@ healthBar.register(() => {
         healthBar.reset();
         Body.setPosition(bell, Vector.create(bellStartPosition.x, bellStartPosition.y));
         userInputHandler.enabled = true;
-    }, 2000);
+        soundPlayer.playAmbient("level_music");
+    }, 4000);
 });
 
 const particleSystems: ParticleSystem<Particle>[] = [];
@@ -176,8 +191,16 @@ const moveBell = (direction: Vector) => {
     holeManager.createHole(direction);
 
     //add bubble-particle system
+    let bubbleCount = 0;
     particleSystems.push(
         new ParticleSystem(engine, bubbleObjectPool, (instance) => {
+            if (bubbleCount++ % 10 === 0) {
+                soundPlayer.playSfxAsync(
+                    ("bubble_" + Math.floor(Common.random(2, 5))) as Sound,
+                    Common.random(0.2, 0.6)
+                );
+            }
+            if (bubbleCount > 100) bubbleCount -= 100;
             const reverseForceInput = Vector.mult(direction, -1);
             const orthogonalForce = Vector.mult(
                 Vector.create(reverseForceInput.y, reverseForceInput.x),
@@ -191,6 +214,9 @@ const moveBell = (direction: Vector) => {
 };
 
 const onWon = async () => {
+    soundPlayer.playAmbient("win", false, 0.8);
+    soundPlayer.stopAllSfx();
+
     bellControls.reset();
     userInputHandler.enabled = false;
     particleSystems.forEach((ps) => {
@@ -200,6 +226,7 @@ const onWon = async () => {
 };
 
 const onPlayAgain = () => {
+    soundPlayer.playAmbient("level_music");
     holeManager.reset();
     userInputHandler.enabled = true;
     particleSystems.forEach((ps) => ps.clear());
@@ -277,6 +304,7 @@ onMounted(() => {
                 render: {
                     fillStyle: "#030714",
                 },
+                label: "terrain",
             }
         )
     );
@@ -315,6 +343,8 @@ onMounted(() => {
 
     // run the engine
     Runner.run(runner, engine);
+
+    soundPlayer.playAmbient("level_music", true);
 });
 </script>
 

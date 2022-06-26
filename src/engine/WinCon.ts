@@ -2,7 +2,7 @@ import { Body, Engine, Events } from "matter-js";
 import { ref } from "vue";
 
 //TODO set on so... when the background is ready
-const winHeight = 7450;
+const winHeight = 100;
 
 export class WinCon {
     shouldOfferRetry = ref(false);
