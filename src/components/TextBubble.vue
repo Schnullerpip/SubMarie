@@ -7,10 +7,10 @@
 <style scoped>
 .text-bubble {
     background: white;
-    border: 2px solid gold;
+    border: 3px solid #5ec8fa;
     border-radius: 10px;
 
-    padding: 5px;
+    padding: 24px 5px 15px;
 
     color: black;
     text-shadow: 0 1px 2px grey;

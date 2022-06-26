@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import MockAsset from "../assets/SubMarine.png";
+import SubMarie from "../assets/SubMarie.png";
+import HappySubMarie from "../assets/HappySubMarie.png";
 import { computed } from "vue";
 import TextBubble from "./TextBubble.vue";
 
@@ -11,7 +12,7 @@ const { emotion } = defineProps<{
     emotion: SubMarieEmotion;
 }>();
 
-const imgSrc = computed(() => MockAsset);
+const imgSrc = computed(() => (emotion === SubMarieEmotion.start ? SubMarie : HappySubMarie));
 
 const text = computed(() => {
     switch (emotion) {
@@ -28,8 +29,7 @@ const text = computed(() => {
 <template>
     <transition name="appear-from-right" appear>
         <div class="img-and-text">
-            <img :src="imgSrc" />
-            <TextBubble class="text-bubble">{{ text }}</TextBubble>
+            {{ text }}
         </div>
     </transition>
 </template>
@@ -37,31 +37,33 @@ const text = computed(() => {
 <style scoped>
 .img-and-text {
     position: absolute;
-    right: 0;
-    top: 0;
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 40%;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+    background: url("../assets/marie/message-window.png") no-repeat;
+    background-size: contain;
+
+    color: white;
+    padding: 36px 12px;
+    font-size: 1rem;
 }
 
-.text-bubble {
-    max-width: 300px;
-}
-
-img {
-    width: 100px;
-    height: 100px;
+@media (max-width: 780px) {
+    .img-and-text {
+        font-size: 0.8rem;
+    }
 }
 
 .appear-from-right-enter-from {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 0;
 }
 
 .appear-from-right-enter-to {
-    transform: translateX(0);
+    transform: translateX(-50%);
     opacity: 1;
 }
 
