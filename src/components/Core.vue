@@ -253,7 +253,6 @@ onMounted(() => {
         engine: engine,
 
         options: {
-            showPerformance: true,
             showCollisions: false,
             wireframes: false,
             showBounds: false,
@@ -385,14 +384,14 @@ onMounted(() => {
 <style>
 .wrapper {
     width: fit-content;
-    height: 90vh;
+    height: 100vh;
     position: relative;
 }
 
 #matter-canvas,
 #three-canvas {
     position: relative;
-    height: 90vh !important;
+    height: 100vh !important;
     object-fit: contain;
 }
 
