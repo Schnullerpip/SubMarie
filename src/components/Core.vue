@@ -154,7 +154,7 @@ healthBar.register(() => {
         bell.frictionAir = 0.03;
         particleSystems.forEach((ps) => ps.clear());
         particleSystems.splice(0, particleSystems.length);
-        holeManager.reset();
+        holeManager.reset(true);
         healthBar.reset();
         Body.setPosition(bell, Vector.create(bellStartPosition.x, bellStartPosition.y));
         userInputHandler.enabled = true;
@@ -213,7 +213,7 @@ const onWon = async () => {
 
 const onPlayAgain = () => {
     soundPlayer.playAmbient("level_music");
-    holeManager.reset();
+    holeManager.reset(true);
     userInputHandler.enabled = true;
     particleSystems.forEach((ps) => ps.clear());
     particleSystems.splice(0, particleSystems.length);
@@ -377,7 +377,7 @@ onMounted(() => {
                 new Station(vector, engine, bell, () => {
                     soundPlayer.playSfx("vroot-vroot", false, true, 0.3);
                     soundPlayer.stopSfx("bubbles_ambient");
-                    holeManager.reset();
+                    holeManager.reset(false);
                     bellControls.reset();
                     particleSystems.forEach((ps) => {
                         ps.stop();
@@ -421,7 +421,11 @@ onMounted(() => {
             <HealthBar :health="healthBar.health.value" />
         </div>
         <SubMarie v-if="showSubMarieStartMessage" :emotion="1" />
-        <WonRepresentation v-else-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
+        <WonRepresentation
+            v-else-if="winCon.shouldOfferRetry.value"
+            :winCon="winCon"
+            :holeManager="holeManager"
+        ></WonRepresentation>
     </div>
     <!-- <Debug :health-bar-handler="healthBar" /> -->
 </template>

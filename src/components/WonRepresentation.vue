@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
+import { HoleManager } from "../engine/HoleManager";
 import { WinCon } from "../engine/WinCon";
 import SubMarie from "./SubMarie.vue";
 import TextBubble from "./TextBubble.vue";
 
-const { winCon } = defineProps<{
+const { winCon, holeManager } = defineProps<{
     winCon: WinCon;
+    holeManager: HoleManager;
 }>();
 
 let showRetryButton = ref(false);
@@ -13,6 +15,8 @@ let showRetryButton = ref(false);
 onMounted(() => {
     window.setTimeout(() => (showRetryButton.value = true), 2000);
 });
+
+const holeCount = computed(() => holeManager.holeCount);
 
 const userClickedRetry = () => {
     winCon.playAgain();
@@ -22,6 +26,8 @@ const userClickedRetry = () => {
 <template>
     <div v-if="winCon.shouldOfferRetry.value" class="won-representation">
         <SubMarie :emotion="0" />
+
+        <div class="hole-count">Holes punched: {{ holeCount }}</div>
 
         <div v-if="showRetryButton" class="play-again-button" @click.native.stop="userClickedRetry">
             <div class="button-line"></div>
@@ -38,6 +44,16 @@ const userClickedRetry = () => {
     height: 100%;
     top: 0;
     left: 0;
+}
+
+.hole-count {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: 20px;
+    color: white;
 }
 
 .play-again-button {
