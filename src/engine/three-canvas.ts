@@ -162,7 +162,7 @@ export class ThreeCanvas {
         this.camera = new OrthographicCamera(width / -2, width / 2, height / 2, height / -2);
         this.scene = new Scene();
         this.renderer = new WebGLRenderer({ canvas: this.canvas });
-        this.renderer.setSize(500, 500 * ratio);
+        this.renderer.setSize(width, height);
 
         const planeGeometry = new PlaneGeometry(1080, 1920, 20, 20 * ratio);
 

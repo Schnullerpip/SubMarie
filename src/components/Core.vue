@@ -387,10 +387,11 @@ onMounted(() => {
     height: 90vh;
     position: relative;
 }
+
 #matter-canvas,
 #three-canvas {
     position: relative;
-    height: 90vh;
+    height: 90vh !important;
     object-fit: contain;
 }
 
@@ -399,6 +400,8 @@ onMounted(() => {
     left: 0;
     top: 0;
     pointer-events: none;
+
+    width: unset !important;
 }
 
 .health-bar {
