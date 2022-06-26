@@ -13,6 +13,7 @@ import { HoleManager } from "../engine/HoleManager";
 import { Cursor } from "../engine/Cursor";
 import "../utils/svgs";
 import { Station } from "../engine/Station";
+import { WinCon } from "../engine/WinCon";
 
 import SubMarine from "../assets/SubMarine.png";
 import Bubble01 from "../assets/bubble-01.png";
@@ -26,6 +27,7 @@ import HealthBar from "./HealthBar.vue";
 import { HealthBarHandler } from "../controls/healthBar";
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 import { SoundPlayer } from "../utils/sound";
+import WonRepresentation from "./WonRepresentation.vue";
 
 /*
     REASONS for custom Renderer:
@@ -180,8 +182,26 @@ const moveBell = (direction: Vector) => {
     );
 };
 
-let render: Render;
+const onWon = async () => {
+    bellControls.reset();
+    userInputHandler.enabled = false;
+    particleSystems.forEach((ps) => {
+        ps.stop();
+    });
+    healthBar.stopBreathing();
+};
 
+const onPlayAgain = () => {
+    holeManager.reset();
+    userInputHandler.enabled = true;
+    particleSystems.forEach((ps) => ps.clear());
+    particleSystems.splice(0, particleSystems.length);
+    healthBar.reset();
+    Body.setPosition(bell, Vector.create(bellStartPosition.x, bellStartPosition.y));
+};
+const winCon = new WinCon(bell, engine, onWon, onPlayAgain);
+
+let render: Render;
 onMounted(() => {
     // create a renderer
     render = Render.create({
@@ -224,7 +244,7 @@ onMounted(() => {
             mask: -1,
         },
         isStatic: true,
-    }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
+    }).then((svg) => Composite.add(engine.world, svg));
 
     // const terrainObject = TERRAIN_2.map((obj) =>
     //     Bodies.fromVertices(
@@ -285,6 +305,8 @@ onMounted(() => {
             <HealthBar :health="healthBar.health.value" />
         </div>
     </div>
+
+    <WonRepresentation v-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
 </template>
 
 <style>
