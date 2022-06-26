@@ -54,6 +54,7 @@ const userClickedRetry = () => {
 
     font-size: 20px;
     color: white;
+    text-shadow: 1px 1px 2px black;
 }
 
 .play-again-button {
