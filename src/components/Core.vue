@@ -24,7 +24,7 @@ import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
 import Background from "../assets/bg3.png";
-import TerrainTexture from "../assets/terrain-texture.png";
+import TerrainTexture from "../assets/terrain-texture2.png";
 import HealthBar from "./HealthBar.vue";
 import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
@@ -341,8 +341,8 @@ onMounted(() => {
             render: {
                 sprite: {
                     texture: TerrainTexture,
-                    xScale: 2.45,
-                    yScale: 2.43,
+                    xScale: 2,
+                    yScale: 2,
                 },
             },
             collisionFilter: {
