@@ -194,13 +194,13 @@ const moveBell = (direction: Vector) => {
     let bubbleCount = 0;
     particleSystems.push(
         new ParticleSystem(engine, bubbleObjectPool, (instance) => {
-            if (bubbleCount++ % 10 === 0) {
+            if (++bubbleCount % 10 === 0) {
                 soundPlayer.playSfxAsync(
                     ("bubble_" + Math.floor(Common.random(2, 5))) as Sound,
                     Common.random(0.2, 0.6)
                 );
+                bubbleCount = 0;
             }
-            if (bubbleCount > 100) bubbleCount -= 100;
             const reverseForceInput = Vector.mult(direction, -1);
             const orthogonalForce = Vector.mult(
                 Vector.create(reverseForceInput.y, reverseForceInput.x),
@@ -250,7 +250,7 @@ onMounted(() => {
             showPerformance: true,
             showCollisions: false,
             wireframes: false,
-            showBounds: false,
+            showBounds: true,
             ...screenDimensions,
         },
     });
