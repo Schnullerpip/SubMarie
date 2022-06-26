@@ -375,7 +375,8 @@ onMounted(() => {
             (vector) => (
                 new Fishy(engine, vector),
                 new Station(vector, engine, bell, () => {
-                    soundPlayer.playSfx("vroot-vroot", false, true, 0.5);
+                    soundPlayer.playSfx("vroot-vroot", false, true, 0.3);
+                    soundPlayer.stopSfx("bubbles_ambient");
                     holeManager.reset();
                     bellControls.reset();
                     particleSystems.forEach((ps) => {
