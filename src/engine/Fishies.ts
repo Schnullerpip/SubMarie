@@ -1,15 +1,37 @@
 import { Bodies, Body, Common, Composite, Engine, Events, Vector } from "matter-js";
 import Fish1 from "../assets/fish01.png";
 import Fish1_Flipped from "../assets/fish01_flipped.png";
+import Fish2 from "../assets/fish02.png";
+import Fish2_Flipped from "../assets/fish02_flipped.png";
 
 export interface FishBody extends Body {
     fishForce: Vector;
 }
 
+const fishPool = [
+    {
+        width: 50,
+        height: 50,
+        img: Fish1,
+        imgFlipped: Fish1_Flipped,
+        scale: 0.5,
+    },
+    {
+        width: 99,
+        height: 55,
+        img: Fish2,
+        imgFlipped: Fish2_Flipped,
+        scale: 0.5,
+    },
+];
+
 export class Fishy {
+    private fishType;
+
     constructor(engine: Engine, pos: Vector) {
-        const size = Math.round(Common.random(25, 50));
-        const fish = Bodies.rectangle(pos.x, pos.y, size, size, {
+        const size = Common.random(1, 2);
+        this.fishType = fishPool[Math.round(Common.random(0, fishPool.length - 1))];
+        const fish = Bodies.rectangle(pos.x, pos.y, this.fishType.width * size, this.fishType.height * size, {
             collisionFilter: {
                 group: -1,
                 category: 4,
@@ -17,9 +39,9 @@ export class Fishy {
             },
             render: {
                 sprite: {
-                    texture: Fish1,
-                    xScale: 0.2 * (size / 50),
-                    yScale: 0.2 * (size / 50),
+                    texture: this.fishType.img,
+                    xScale: this.fishType.scale * size,
+                    yScale: this.fishType.scale * size,
                 },
             },
             inertia: Infinity,
@@ -28,6 +50,7 @@ export class Fishy {
         });
 
         (fish as FishBody).fishForce = Fishy.getNewFishForce();
+        console.log((fish as FishBody).fishForce);
 
         Composite.add(engine.world, fish);
 
@@ -41,7 +64,7 @@ export class Fishy {
                 Math.abs(fish.velocity.x) >= 0.00001
             ) {
                 lastVelocity = fish.velocity.x;
-                fish.render.sprite.texture = fish.velocity.x < 0 ? Fish1_Flipped : Fish1;
+                fish.render.sprite.texture = fish.velocity.x < 0 ? this.fishType.imgFlipped : this.fishType.img;
             }
         });
     }
@@ -49,8 +72,8 @@ export class Fishy {
     static getNewFishForce() {
         const xDir = Common.random(0, 1) > 0.5;
         const yDir = Common.random(0, 1) > 0.5;
-        const xForce = Common.random(1, 3);
-        const yForce = Common.random(1, 3);
-        return Vector.create((xForce / 100000) * (xDir ? 1 : -1), (yForce / 100000) * (yDir ? 1 : -1));
+        const xForce = Common.random(2, 4);
+        const yForce = Common.random(2, 4);
+        return Vector.create((xForce / 20000) * (xDir ? 1 : -1), (yForce / 20000) * (yDir ? 1 : -1));
     }
 }

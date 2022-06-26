@@ -374,6 +374,7 @@ onMounted(() => {
         .map(
             (vector) => (
                 new Fishy(engine, vector),
+                new Fishy(engine, vector),
                 new Station(vector, engine, bell, () => {
                     soundPlayer.playSfx("vroot-vroot", false, true, 0.3);
                     soundPlayer.stopSfx("bubbles_ambient");
