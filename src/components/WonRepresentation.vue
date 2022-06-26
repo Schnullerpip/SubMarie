@@ -22,7 +22,9 @@ const userClickedRetry = () => {
 <template>
     <div v-if="winCon.shouldOfferRetry.value" class="won-representation">
         <SubMarie :emotion="0" />
-        <button v-if="showRetryButton" @click.native="userClickedRetry">Play again! (sry Marie ¯\_(ツ)_/¯)</button>
+        <button v-if="showRetryButton" @click.native.stop="userClickedRetry">
+            <span class="again">Play again!</span> <br />( sry Marie ¯\_(ツ)_/¯ )
+        </button>
     </div>
 </template>
 
@@ -35,14 +37,22 @@ const userClickedRetry = () => {
 
 button {
     position: absolute;
-    bottom: 100px;
+    bottom: 121px;
     left: 50%;
     transform: translateX(-50%);
-
-    width: 150px;
-    height: 100px;
-
+    width: 350px;
+    height: 80px;
     border-radius: 10px;
+    background-color: #d8c145;
+    color: white;
+    font-size: 22px;
+    border: 4px #ffed8e solid;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+
+.again {
+    font-size: 26px;
+    font-weight: bold;
 }
 
 .marie-and-text {

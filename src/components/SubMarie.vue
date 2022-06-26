@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import MockAsset from "../assets/SubMarine.png";
+import SubMarie from "../assets/SubMarie.png";
+import HappySubMarie from "../assets/HappySubMarie.png";
 import { computed } from "vue";
 import TextBubble from "./TextBubble.vue";
 
@@ -11,7 +12,7 @@ const { emotion } = defineProps<{
     emotion: SubMarieEmotion;
 }>();
 
-const imgSrc = computed(() => MockAsset);
+const imgSrc = computed(() => (emotion === SubMarieEmotion.start ? SubMarie : HappySubMarie));
 
 const text = computed(() => {
     switch (emotion) {
@@ -37,22 +38,26 @@ const text = computed(() => {
 <style scoped>
 .img-and-text {
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 10px;
+    top: 10px;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
+    align-items: flex-end;
 }
 
 .text-bubble {
     max-width: 300px;
+    margin-top: -26px;
+    position: relative;
 }
 
 img {
-    width: 100px;
-    height: 100px;
+    width: min(25vw, 200px);
+    height: min(25vw, 200px);
+    position: relative;
+    z-index: 2;
 }
 
 .appear-from-right-enter-from {

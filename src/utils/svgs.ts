@@ -11,7 +11,7 @@ Bodies.fromSvg = async (path: string, scale: number, ...a: Parameters<typeof Bod
         select(root, "path").map((path) => Vertices.scale(Svg.pathToVertices(path, 100), scale, scale, { x: 0, y: 0 }))
     );
 
-    //console.log(vertices);
+    // console.log(vertices);
 
     return Bodies.fromVertices(a[0], a[1], vertices, a[3], a[4]);
 };

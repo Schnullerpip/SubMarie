@@ -26,7 +26,7 @@ import Background from "../assets/bg2.png";
 import HealthBar from "./HealthBar.vue";
 import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
-import { TERRAIN_1, TERRAIN_2 } from "../terrain";
+import { TERRAIN_1, TERRAIN_2, TERRAIN_3 } from "../terrain";
 import { SoundPlayer } from "../utils/sound";
 import WonRepresentation from "./WonRepresentation.vue";
 import SubMarie from "./SubMarie.vue";
@@ -254,30 +254,30 @@ onMounted(() => {
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
 
-    Bodies.fromSvg("/svg/terrain-paths2.svg", 1, terrainCenter.x - 70, terrainCenter.y + 470, [], {
-        collisionFilter: {
-            group: -2,
-            category: 2,
-            mask: -1,
-        },
-        isStatic: true,
-    }).then((svg) => Composite.add(engine.world, svg));
+    // Bodies.fromSvg("/svg/terrain-paths2.svg", 1, terrainCenter.x - 70, terrainCenter.y + 470, [], {
+    //     collisionFilter: {
+    //         group: -2,
+    //         category: 2,
+    //         mask: -1,
+    //     },
+    //     isStatic: true,
+    // }).then((svg) => Composite.add(engine.world, svg));
 
-    // const terrainObject = TERRAIN_2.map((obj) =>
-    //     Bodies.fromVertices(
-    //         obj.position.x,
-    //         obj.position.y,
-    //         [obj.vertices.map((vector) => Vector.create(vector.x, vector.y))],
-    //         {
-    //             isStatic: true,
-    //             collisionFilter: {
-    //                 category: 2,
-    //                 mask: -1,
-    //             },
-    //         }
-    //     )
-    // );
-    // Composite.add(engine.world, terrainObject);
+    const terrainObject = TERRAIN_3.map((obj) =>
+        Bodies.fromVertices(
+            obj.position.x,
+            obj.position.y,
+            obj.vertices.map((vecList) => vecList.map((vector) => Vector.create(vector.x, vector.y))),
+            {
+                isStatic: true,
+                collisionFilter: {
+                    category: 2,
+                    mask: -1,
+                },
+            }
+        )
+    );
+    Composite.add(engine.world, terrainObject);
 
     const mouse = Mouse.create(render.canvas);
     const mouseInput = new MouseInput(document.body, mouse, bell, render);
@@ -324,7 +324,7 @@ onMounted(() => {
     </div>
     <SubMarie v-if="showSubMarieStartMessage" :emotion="1" />
     <WonRepresentation v-else-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
-    <Debug :health-bar-handler="healthBar" />
+    <!-- <Debug :health-bar-handler="healthBar" /> -->
 </template>
 
 <style>
