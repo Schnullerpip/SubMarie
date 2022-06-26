@@ -22,7 +22,7 @@ import Bubble03 from "../assets/bubble-03.png";
 import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
-import Background from "../assets/bg2.png";
+import Background from "../assets/bg3.png";
 import HealthBar from "./HealthBar.vue";
 import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
@@ -273,6 +273,9 @@ onMounted(() => {
                 collisionFilter: {
                     category: 2,
                     mask: -1,
+                },
+                render: {
+                    fillStyle: "#030714",
                 },
             }
         )
