@@ -24,6 +24,7 @@ import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
 import Background from "../assets/bg3.png";
+import TerrainTexture from "../assets/terrain-texture.png";
 import HealthBar from "./HealthBar.vue";
 import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
@@ -261,7 +262,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, screenDimensions);
+    new Camera(bell, engine, render, terrainDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -314,7 +315,27 @@ onMounted(() => {
             }
         )
     );
-    Composite.add(engine.world, terrainObject);
+    const terrainTexture = Bodies.rectangle(
+        terrainCenter.x - 30,
+        terrainCenter.y + 320,
+        terrainDimensions.width,
+        terrainDimensions.height,
+        {
+            render: {
+                sprite: {
+                    texture: TerrainTexture,
+                    xScale: 2.45,
+                    yScale: 2.43,
+                },
+            },
+            collisionFilter: {
+                category: 0,
+                mask: 0,
+            },
+            isStatic: true,
+        }
+    );
+    Composite.add(engine.world, [...terrainObject, terrainTexture]);
 
     const mouse = Mouse.create(render.canvas);
     const mouseInput = new MouseInput(document.body, mouse, bell, render);
@@ -330,7 +351,7 @@ onMounted(() => {
         { x: 884, y: 3360 },
         { x: 815, y: 2040 },
         { x: 4508, y: 2485 },
-        { x: 6170, y: 3393 },
+        { x: 5320, y: 4623 },
     ].map(
         (vector) =>
             new Station(Vector.create(vector.x, vector.y + 300), engine, bell, () => {
