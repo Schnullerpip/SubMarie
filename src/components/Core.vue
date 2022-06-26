@@ -21,7 +21,7 @@ import Bubble03 from "../assets/bubble-03.png";
 import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
-import Background from "../assets/bg.png";
+import Background from "../assets/bg2.png";
 import HealthBar from "./HealthBar.vue";
 import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
@@ -202,7 +202,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, terrainDimensions);
+    new Camera(bell, engine, render, screenDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
