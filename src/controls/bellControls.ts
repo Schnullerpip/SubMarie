@@ -19,6 +19,9 @@ export class BellControls {
         this.forces.push(force);
         this.accumulatedForce = Vector.add(this.accumulatedForce, force);
         this.soundPlayer.playSfx("open_hole", false, true, 0.4);
+        if (this.forces.length === 1) {
+            this.soundPlayer.playSfx("bubbles_ambient", true, true, 0.4);
+        }
     }
 
     reset() {

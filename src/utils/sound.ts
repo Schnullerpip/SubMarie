@@ -14,7 +14,8 @@ export type Sound =
     | "bubble_2"
     | "bubble_3"
     | "bubble_4"
-    | "bubble_5";
+    | "bubble_5"
+    | "bubbles_ambient";
 
 export class SoundPlayer {
     private ambientSound: Howl | null = null;

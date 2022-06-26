@@ -138,7 +138,7 @@ Events.on(engine, "collisionStart", (event) => {
             (pair.bodyA === bell && pair.bodyB.label === "terrain") ||
             (pair.bodyB === bell && pair.bodyB.label === "terrain")
         ) {
-            soundPlayer.playSfx("hit_fast");
+            soundPlayer.playSfx("hit_fast", false, true, 1);
         }
     }
 });
@@ -194,13 +194,14 @@ const moveBell = (direction: Vector) => {
     let bubbleCount = 0;
     particleSystems.push(
         new ParticleSystem(engine, bubbleObjectPool, (instance) => {
-            if (++bubbleCount % 10 === 0) {
-                soundPlayer.playSfxAsync(
-                    ("bubble_" + Math.floor(Common.random(2, 5))) as Sound,
-                    Common.random(0.2, 0.6)
-                );
-                bubbleCount = 0;
-            }
+            // TODO bubble sounds
+            // if (++bubbleCount % 10 === 0) {
+            //     soundPlayer.playSfxAsync(
+            //         ("bubble_" + Math.floor(Common.random(2, 5))) as Sound,
+            //         Common.random(0.2, 0.6)
+            //     );
+            //     bubbleCount = 0;
+            // }
             const reverseForceInput = Vector.mult(direction, -1);
             const orthogonalForce = Vector.mult(
                 Vector.create(reverseForceInput.y, reverseForceInput.x),
@@ -255,7 +256,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, screenDimensions);
+    new Camera(bell, engine, render, terrainDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -315,22 +316,35 @@ onMounted(() => {
     userInputHandler.setMouseInput(mouseInput);
     const cursor = new Cursor(mouseInput, bell, render, engine);
 
-    new Station(Vector.create(3000, 6000), engine, bell, () => {
-        holeManager.reset();
-        bellControls.reset();
-        particleSystems.forEach((ps) => {
-            ps.stop();
-        });
+    [
+        { x: 3000, y: 6000 },
+        { x: 688, y: 8551 },
+        { x: 4231, y: 8847 },
+        { x: 4425, y: 6666 },
+        { x: 417, y: 5811 },
+        { x: 884, y: 3360 },
+        { x: 815, y: 2140 },
+        { x: 4508, y: 2485 },
+        { x: 6170, y: 3393 },
+    ].map(
+        (vector) =>
+            new Station(Vector.create(vector.x, vector.y), engine, bell, () => {
+                holeManager.reset();
+                bellControls.reset();
+                particleSystems.forEach((ps) => {
+                    ps.stop();
+                });
 
-        const numSystems = particleSystems.length;
+                const numSystems = particleSystems.length;
 
-        window.setTimeout(() => {
-            for (let i = 0; i < numSystems; ++i) {
-                particleSystems[i]?.clear();
-            }
-            particleSystems.splice(0, numSystems);
-        }, 2000);
-    });
+                window.setTimeout(() => {
+                    for (let i = 0; i < numSystems; ++i) {
+                        particleSystems[i]?.clear();
+                    }
+                    particleSystems.splice(0, numSystems);
+                }, 2000);
+            })
+    );
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
@@ -354,9 +368,9 @@ onMounted(() => {
         <div class="health-bar">
             <HealthBar :health="healthBar.health.value" />
         </div>
+        <SubMarie v-if="showSubMarieStartMessage" :emotion="1" />
+        <WonRepresentation v-else-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
     </div>
-    <SubMarie v-if="showSubMarieStartMessage" :emotion="1" />
-    <WonRepresentation v-else-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
     <!-- <Debug :health-bar-handler="healthBar" /> -->
 </template>
 

@@ -10,7 +10,7 @@ export class HealthBarHandler {
     public health = computed(() => this.currentHealth.value / this.maxHealth);
 
     public breathDepletion = ref(20);
-    public holeDepletion = ref(40);
+    public holeDepletion = ref(50);
 
     private running = true;
     private almostDeadSoundPlaying = false;
@@ -23,7 +23,7 @@ export class HealthBarHandler {
                 return;
             }
             this.currentHealth.value -= this.breathDepletion.value;
-            this.currentHealth.value -= bellControls.forces.length * this.holeDepletion.value;
+            this.currentHealth.value -= bellControls.forces.length ** 1.2 * this.holeDepletion.value;
 
             if (this.health.value <= 0.25 && !this.almostDeadSoundPlaying) {
                 this.almostDeadSoundPlaying = true;

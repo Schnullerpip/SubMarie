@@ -29,8 +29,7 @@ const text = computed(() => {
 <template>
     <transition name="appear-from-right" appear>
         <div class="img-and-text">
-            <img :src="imgSrc" />
-            <TextBubble class="text-bubble">{{ text }}</TextBubble>
+            {{ text }}
         </div>
     </transition>
 </template>
@@ -38,35 +37,33 @@ const text = computed(() => {
 <style scoped>
 .img-and-text {
     position: absolute;
-    right: 10px;
+    left: 50%;
     top: 10px;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 40%;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-end;
+    background: url("../assets/marie/message-window.png") no-repeat;
+    background-size: contain;
+
+    color: white;
+    padding: 36px 12px;
+    font-size: 1rem;
 }
 
-.text-bubble {
-    max-width: 300px;
-    margin-top: -26px;
-    position: relative;
-}
-
-img {
-    width: min(25vw, 200px);
-    height: min(25vw, 200px);
-    position: relative;
-    z-index: 2;
+@media (max-width: 780px) {
+    .img-and-text {
+        font-size: 0.8rem;
+    }
 }
 
 .appear-from-right-enter-from {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 0;
 }
 
 .appear-from-right-enter-to {
-    transform: translateX(0);
+    transform: translateX(-50%);
     opacity: 1;
 }
 

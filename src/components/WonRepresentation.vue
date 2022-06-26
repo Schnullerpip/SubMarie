@@ -22,37 +22,44 @@ const userClickedRetry = () => {
 <template>
     <div v-if="winCon.shouldOfferRetry.value" class="won-representation">
         <SubMarie :emotion="0" />
-        <button v-if="showRetryButton" @click.native.stop="userClickedRetry">
-            <span class="again">Play again!</span> <br />( sry Marie ¯\_(ツ)_/¯ )
-        </button>
+
+        <div v-if="showRetryButton" class="play-again-button" @click.native.stop="userClickedRetry">
+            <div class="button-line"></div>
+            <div class="button"></div>
+            <div class="button-line"></div>
+        </div>
     </div>
 </template>
 
 <style scoped>
 .won-representation {
     position: absolute;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
-button {
+.play-again-button {
     position: absolute;
-    bottom: 121px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 350px;
-    height: 80px;
-    border-radius: 10px;
-    background-color: #d8c145;
-    color: white;
-    font-size: 22px;
-    border: 4px #ffed8e solid;
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    left: 0;
+    bottom: 105px;
+    width: 100%;
+    display: flex;
+    align-items: center;
 }
 
-.again {
-    font-size: 26px;
-    font-weight: bold;
+.button {
+    height: 65.5px;
+    width: 173px;
+    background: url("../assets/buttons/button.png") no-repeat;
+    background-size: contain;
+}
+
+.button-line {
+    flex: 1;
+    height: 10px;
+    background: url("../assets/buttons/button-bar.png") repeat-x;
 }
 
 .marie-and-text {
