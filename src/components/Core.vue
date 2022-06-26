@@ -256,7 +256,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, terrainDimensions);
+    new Camera(bell, engine, render, screenDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -317,18 +317,18 @@ onMounted(() => {
     const cursor = new Cursor(mouseInput, bell, render, engine);
 
     [
-        { x: 3000, y: 6000 },
+        { x: 3000, y: 5700 },
         { x: 688, y: 8551 },
-        { x: 4231, y: 8847 },
-        { x: 4425, y: 6666 },
+        { x: 4531, y: 8847 },
+        { x: 4325, y: 6666 },
         { x: 417, y: 5811 },
         { x: 884, y: 3360 },
-        { x: 815, y: 2140 },
+        { x: 815, y: 2040 },
         { x: 4508, y: 2485 },
         { x: 6170, y: 3393 },
     ].map(
         (vector) =>
-            new Station(Vector.create(vector.x, vector.y), engine, bell, () => {
+            new Station(Vector.create(vector.x, vector.y + 300), engine, bell, () => {
                 holeManager.reset();
                 bellControls.reset();
                 particleSystems.forEach((ps) => {

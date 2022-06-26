@@ -41,10 +41,10 @@ export class Station {
                 Body.applyForce(body, body.position, Vector.create(0, 0.004 * (tick % 100) * yForceDir));
                 yForceDir *= -1;
             }
-            if (tick % 144 < 10 && tick % 144 !== 0) {
-                Body.applyForce(body, body.position, Vector.create(0.002 * (tick % 144) * xForceDir, 0));
-                xForceDir *= -1;
-            }
+            // if (tick % 144 < 10 && tick % 144 !== 0) {
+            //     Body.applyForce(body, body.position, Vector.create(0.002 * (tick % 144) * xForceDir, 0));
+            //     xForceDir *= -1;
+            // }
             if (tick > 1000) {
                 tick -= 1000;
             }
