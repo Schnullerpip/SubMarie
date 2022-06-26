@@ -50,7 +50,6 @@ export class Fishy {
         });
 
         (fish as FishBody).fishForce = Fishy.getNewFishForce();
-        console.log((fish as FishBody).fishForce);
 
         Composite.add(engine.world, fish);
 
