@@ -10,6 +10,8 @@ export class UserInputHandler {
     private listeners: UserInputListener[] = [];
     private mouseInput: MouseInput | null = null;
 
+    private keyBoardUnlocked = false;
+
     public enabled = true;
 
     /**
@@ -22,6 +24,12 @@ export class UserInputHandler {
             }
             const keyEvent = event as KeyboardEvent;
             const key = keyEvent.key;
+
+            if (key === "u") {
+                this.keyBoardUnlocked = true;
+            }
+
+            if (!this.keyBoardUnlocked) return;
 
             const forces = Matter.Vector.create(0, 0);
 

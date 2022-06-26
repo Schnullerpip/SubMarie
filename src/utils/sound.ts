@@ -40,7 +40,6 @@ export class SoundPlayer {
     }
 
     playSfx(sound: Sound, loop = false, reset = true, volume = 0.8) {
-        console.log("Play: " + sound);
         if (!reset && this.sfx[sound]?.playing()) return;
 
         const howl =

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Matter, { Mouse, Body, Render, Vector, Events, Common } from "matter-js";
+import Matter, { Mouse, Body, Render, Vector, Events, Common, IPair } from "matter-js";
 import { onMounted, ref } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
@@ -32,6 +32,7 @@ import { TERRAIN_1, TERRAIN_2, TERRAIN_3 } from "../terrain";
 import { Sound, SoundPlayer } from "../utils/sound";
 import WonRepresentation from "./WonRepresentation.vue";
 import SubMarie from "./SubMarie.vue";
+import { FishBody, Fishy } from "../engine/Fishies";
 
 /*
     REASONS for custom Renderer:
@@ -106,13 +107,6 @@ const bubbleCreator = () => {
     return bubble as Particle;
 };
 
-Events.on(engine, "collisionStart", (e) => {
-    e.pairs.forEach(({ bodyA, bodyB }) => {
-        if (bodyA.label === "bubble") (bodyA as Particle).age = 1.7;
-        if (bodyB.label === "bubble") (bodyB as Particle).age = 1.7;
-    });
-});
-
 const bubbleObjectPool = new ObjectPool(bubbleCreator, 1000);
 
 const bellStartPosition = {
@@ -132,17 +126,6 @@ const bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
             xScale: 0.4,
         },
     },
-});
-
-Events.on(engine, "collisionStart", (event) => {
-    for (const pair of event.pairs) {
-        if (
-            (pair.bodyA === bell && pair.bodyB.label === "terrain") ||
-            (pair.bodyB === bell && pair.bodyB.label === "terrain")
-        ) {
-            soundPlayer.playSfx("hit_fast", false, true, 1);
-        }
-    }
 });
 
 const bellControls = new BellControls(bell, engine, soundPlayer);
@@ -241,6 +224,33 @@ const onPlayAgain = () => {
 };
 const winCon = new WinCon(bell, engine, onWon, onPlayAgain);
 
+// Setu Collision Events
+Events.on(engine, "collisionStart", (e) => {
+    e.pairs.forEach(({ bodyA, bodyB }: { bodyA: Body; bodyB: Body }) => {
+        if (bodyA.label === "bubble") (bodyA as Particle).age = 1.7;
+        if (bodyB.label === "bubble") (bodyB as Particle).age = 1.7;
+        if ((bodyA === bell && bodyB.label === "terrain") || (bodyB === bell && bodyB.label === "terrain")) {
+            soundPlayer.playSfx("hit_fast", false, true, 1);
+        }
+        if (bodyA.label === "fish") {
+            (bodyA as FishBody).fishForce = Fishy.getNewFishForce();
+        }
+        if (bodyB.label === "fish") {
+            (bodyB as FishBody).fishForce = Fishy.getNewFishForce();
+        }
+    });
+});
+Events.on(engine, "collisionActive", (e) => {
+    e.pairs.forEach(({ bodyA, bodyB, contacts }: IPair) => {
+        if (bodyA.label === "fish") {
+            (bodyA as FishBody).fishForce = Fishy.getNewFishForce();
+        }
+        if (bodyB.label === "fish") {
+            (bodyB as FishBody).fishForce = Fishy.getNewFishForce();
+        }
+    });
+});
+
 let render: Render;
 onMounted(() => {
     //the canvas we draw our game on
@@ -261,7 +271,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, terrainDimensions);
+    new Camera(bell, engine, render, screenDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -286,6 +296,14 @@ onMounted(() => {
 
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
+
+    // new Fishy(engine);
+    // new Fishy(engine);
+    // new Fishy(engine);
+    // new Fishy(engine);
+    // new Fishy(engine);
+    // new Fishy(engine);
+    // new Fishy(engine);
 
     // Bodies.fromSvg("/svg/terrain-paths2.svg", 1, terrainCenter.x - 70, terrainCenter.y + 470, [], {
     //     collisionFilter: {
@@ -351,26 +369,31 @@ onMounted(() => {
         { x: 815, y: 2040 },
         { x: 4508, y: 2485 },
         { x: 5320, y: 4623 },
-    ].map(
-        (vector) =>
-            new Station(Vector.create(vector.x, vector.y + 300), engine, bell, () => {
-                soundPlayer.playSfx("vroot-vroot");
-                holeManager.reset();
-                bellControls.reset();
-                particleSystems.forEach((ps) => {
-                    ps.stop();
-                });
+    ]
+        .map((vec) => Vector.create(vec.x, vec.y + 300))
+        .map(
+            (vector) => (
+                new Fishy(engine, vector),
+                new Station(vector, engine, bell, () => {
+                    soundPlayer.playSfx("vroot-vroot", false, true, 0.5);
+                    holeManager.reset();
+                    bellControls.reset();
+                    particleSystems.forEach((ps) => {
+                        ps.stop();
+                    });
 
-                const numSystems = particleSystems.length;
+                    const numSystems = particleSystems.length;
 
-                window.setTimeout(() => {
-                    for (let i = 0; i < numSystems; ++i) {
-                        particleSystems[i]?.clear();
-                    }
-                    particleSystems.splice(0, numSystems);
-                }, 2000);
-            })
-    );
+                    window.setTimeout(() => {
+                        for (let i = 0; i < numSystems; ++i) {
+                            particleSystems[i]?.clear();
+                        }
+                        particleSystems.splice(0, numSystems);
+                    }, 2000);
+                })
+            )
+        );
+    new Fishy(engine, Vector.create(3294, 9067)); // player fish
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
