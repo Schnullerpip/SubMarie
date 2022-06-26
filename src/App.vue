@@ -27,5 +27,6 @@ body {
     align-items: center;
     justify-content: center;
     background-color: #14151f;
+    display: relative;
 }
 </style>

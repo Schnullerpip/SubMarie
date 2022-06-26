@@ -22,10 +22,11 @@ import Bubble03 from "../assets/bubble-03.png";
 import Bubble04 from "../assets/bubble-04.png";
 import Bubble05 from "../assets/bubble-05.png";
 import Bubble06 from "../assets/bubble-06.png";
-import { TERRAIN_1, TERRAIN_2 } from "../terrain";
+import Background from "../assets/bg.png";
 import HealthBar from "./HealthBar.vue";
+import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
-import { createStructuralDirectiveTransform } from "@vue/compiler-core";
+import { TERRAIN_1, TERRAIN_2 } from "../terrain";
 import { SoundPlayer } from "../utils/sound";
 import WonRepresentation from "./WonRepresentation.vue";
 
@@ -63,8 +64,8 @@ const screenCenter = {
 };
 
 const terrainDimensions = {
-    width: 6971,
-    height: 7610,
+    width: 6781,
+    height: 9486,
 };
 const terrainCenter = {
     x: terrainDimensions.width / 2,
@@ -111,10 +112,11 @@ Events.on(engine, "collisionStart", (e) => {
 const bubbleObjectPool = new ObjectPool(bubbleCreator, 1000);
 
 const bellStartPosition = {
-    x: 3520,
-    y: 7550,
+    x: 3294,
+    y: 9367,
 } as const;
 let bell = Bodies.circle(bellStartPosition.x, bellStartPosition.y, 80, {
+    friction: 0.07,
     frictionAir: 0.03,
     inertia: Infinity,
     inverseInertia: 0,
@@ -139,12 +141,15 @@ healthBar.register(() => {
     particleSystems.forEach((ps) => {
         ps.stop();
     });
+    bellControls.reset();
+    bell.frictionAir = 0.005;
 
     window.setTimeout(() => {
         if (healthBar.health.value > 0) {
             return;
         }
         bellControls.reset();
+        bell.frictionAir = 0.03;
         particleSystems.forEach((ps) => ps.clear());
         particleSystems.splice(0, particleSystems.length);
         holeManager.reset();
@@ -217,27 +222,33 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, screenDimensions);
+    new Camera(bell, engine, render, terrainDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
         terrainCenter.x,
-        terrainCenter.y,
+        terrainCenter.y - 1200,
         terrainDimensions.width,
-        terrainDimensions.height * 1.5,
+        terrainDimensions.height,
         {
             collisionFilter: {
                 category: 0,
                 mask: 0,
             },
-            render: { fillStyle: "midnightblue" },
+            render: {
+                sprite: {
+                    texture: Background,
+                    xScale: 2,
+                    yScale: 2,
+                },
+            },
         }
     );
 
     // add all of the bodies to the world
     Composite.add(engine.world, [background, bell]);
 
-    Bodies.fromSvg("/svg/terrain-paths4.svg", 1, terrainCenter.x, 4000, [], {
+    Bodies.fromSvg("/svg/terrain-paths2.svg", 1, terrainCenter.x - 70, terrainCenter.y + 470, [], {
         collisionFilter: {
             group: -2,
             category: 2,
@@ -267,7 +278,7 @@ onMounted(() => {
     userInputHandler.setMouseInput(mouseInput);
     const cursor = new Cursor(mouseInput, bell, render, engine);
 
-    const station = new Station(Vector.create(bellStartPosition.x, bellStartPosition.y - 1), engine, bell, () => {
+    new Station(Vector.create(3000, 6000), engine, bell, () => {
         holeManager.reset();
         bellControls.reset();
         particleSystems.forEach((ps) => {
@@ -305,8 +316,8 @@ onMounted(() => {
             <HealthBar :health="healthBar.health.value" />
         </div>
     </div>
-
     <WonRepresentation v-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
+    <Debug :health-bar-handler="healthBar" />
 </template>
 
 <style>
