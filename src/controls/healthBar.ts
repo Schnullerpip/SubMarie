@@ -10,7 +10,7 @@ export class HealthBarHandler {
     public health = computed(() => this.currentHealth.value / this.maxHealth);
 
     public breathDepletion = ref(20);
-    public holeDepletion = ref(50);
+    public holeDepletion = ref(30);
 
     private running = true;
     private almostDeadSoundPlaying = false;

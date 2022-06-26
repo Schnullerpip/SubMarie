@@ -251,7 +251,7 @@ onMounted(() => {
             showPerformance: true,
             showCollisions: false,
             wireframes: false,
-            showBounds: true,
+            showBounds: false,
             ...screenDimensions,
         },
     });
