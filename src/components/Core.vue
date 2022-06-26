@@ -14,6 +14,7 @@ import { Cursor } from "../engine/Cursor";
 import "../utils/svgs";
 import { Station } from "../engine/Station";
 import { WinCon } from "../engine/WinCon";
+import { ThreeCanvas } from "../engine/three-canvas";
 
 import SubMarine from "../assets/SubMarine.png";
 import Bubble01 from "../assets/bubble-01.png";
@@ -213,10 +214,14 @@ const winCon = new WinCon(bell, engine, onWon, onPlayAgain);
 
 let render: Render;
 onMounted(() => {
+    //the canvas we draw our game on
+    const canvas = document.querySelector<HTMLCanvasElement>("#matter-canvas")!;
+
     onPlayAgain();
     // create a renderer
     render = Render.create({
-        element: document.querySelector<HTMLElement>("#core")!,
+        canvas,
+        //element: document.querySelector<HTMLElement>("#core")!,
         engine: engine,
 
         options: {
@@ -228,7 +233,7 @@ onMounted(() => {
         },
     });
 
-    new Camera(bell, engine, render, terrainDimensions);
+    new Camera(bell, engine, render, screenDimensions);
 
     // create ground + left and right mock terrain
     const background = Bodies.rectangle(
@@ -312,12 +317,15 @@ onMounted(() => {
 
     // run the engine
     Runner.run(runner, engine);
+
+    new ThreeCanvas("three-canvas", canvas);
 });
 </script>
 
 <template>
     <div class="wrapper">
-        <div id="core"></div>
+        <canvas id="matter-canvas"></canvas>
+        <canvas id="three-canvas"></canvas>
         <div class="health-bar">
             <HealthBar :health="healthBar.health.value" />
         </div>
@@ -333,10 +341,20 @@ onMounted(() => {
     height: 90vh;
     position: relative;
 }
-canvas {
+#matter-canvas,
+#three-canvas {
+    position: relative;
     height: 90vh;
     object-fit: contain;
 }
+
+#three-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
 .health-bar {
     position: absolute;
     bottom: 20px;

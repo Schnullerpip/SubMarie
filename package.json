@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "@types/matter-js": "^0.17.7",
+    "@types/three": "^0.141.0",
     "howler": "^2.2.3",
     "matter-js": "^0.18.0",
     "poly-decomp": "^0.3.0",
+    "three": "^0.141.0",
     "vue": "^3.2.25"
   },
   "devDependencies": {
