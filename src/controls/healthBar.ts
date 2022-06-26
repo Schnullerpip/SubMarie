@@ -11,10 +11,15 @@ export class HealthBarHandler {
     public breathDepletion = ref(100);
     public holeDepletion = ref(35);
 
+    private running = true;
+
     private listeners: (() => void)[] = [];
 
     constructor(bellControls: BellControls, engine: Engine) {
         Events.on(engine, "afterUpdate", (e) => {
+            if (!this.running) {
+                return;
+            }
             this.currentHealth.value -= this.breathDepletion.value;
             this.currentHealth.value -= bellControls.forces.length * this.holeDepletion.value;
 
@@ -25,8 +30,13 @@ export class HealthBarHandler {
         });
     }
 
+    stopBreathing() {
+        this.running = false;
+    }
+
     reset() {
         this.currentHealth.value = this.maxHealth;
+        this.running = true;
     }
 
     register(callBack: () => void) {

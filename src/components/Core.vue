@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Matter, { Mouse, Body, Render, Vector, Events } from "matter-js";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
 import { BellControls } from "../controls/bellControls";
@@ -13,6 +13,7 @@ import { HoleManager } from "../engine/HoleManager";
 import { Cursor } from "../engine/Cursor";
 import "../utils/svgs";
 import { Station } from "../engine/Station";
+import { WinCon } from "../engine/WinCon";
 
 import SubMarine from "../assets/SubMarine.png";
 import Bubble01 from "../assets/bubble-01.png";
@@ -27,6 +28,8 @@ import Debug from "./Debug.vue";
 import { HealthBarHandler } from "../controls/healthBar";
 import { TERRAIN_1, TERRAIN_2 } from "../terrain";
 import { SoundPlayer } from "../utils/sound";
+import WonRepresentation from "./WonRepresentation.vue";
+import SubMarie from "./SubMarie.vue";
 
 /*
     REASONS for custom Renderer:
@@ -43,6 +46,8 @@ const Engine = Matter.Engine,
     Composite = Matter.Composite;
 
 Matter.Common.setDecomp(PolyDecomp);
+
+let showSubMarieStartMessage = ref(false);
 
 // create an engine
 const engine = Engine.create({
@@ -185,9 +190,30 @@ const moveBell = (direction: Vector) => {
     );
 };
 
-let render: Render;
+const onWon = async () => {
+    bellControls.reset();
+    userInputHandler.enabled = false;
+    particleSystems.forEach((ps) => {
+        ps.stop();
+    });
+    healthBar.stopBreathing();
+};
 
+const onPlayAgain = () => {
+    holeManager.reset();
+    userInputHandler.enabled = true;
+    particleSystems.forEach((ps) => ps.clear());
+    particleSystems.splice(0, particleSystems.length);
+    healthBar.reset();
+    Body.setPosition(bell, Vector.create(bellStartPosition.x, bellStartPosition.y));
+    showSubMarieStartMessage.value = true;
+    window.setTimeout(() => (showSubMarieStartMessage.value = false), 15000);
+};
+const winCon = new WinCon(bell, engine, onWon, onPlayAgain);
+
+let render: Render;
 onMounted(() => {
+    onPlayAgain();
     // create a renderer
     render = Render.create({
         element: document.querySelector<HTMLElement>("#core")!,
@@ -235,7 +261,7 @@ onMounted(() => {
             mask: -1,
         },
         isStatic: true,
-    }).then((svg) => (console.log(svg), Composite.add(engine.world, svg)));
+    }).then((svg) => Composite.add(engine.world, svg));
 
     // const terrainObject = TERRAIN_2.map((obj) =>
     //     Bodies.fromVertices(
@@ -296,6 +322,8 @@ onMounted(() => {
             <HealthBar :health="healthBar.health.value" />
         </div>
     </div>
+    <SubMarie v-if="showSubMarieStartMessage" :emotion="1" />
+    <WonRepresentation v-else-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
     <Debug :health-bar-handler="healthBar" />
 </template>
 
