@@ -16,9 +16,9 @@ const imgSrc = computed(() => MockAsset);
 const text = computed(() => {
     switch (emotion) {
         case SubMarieEmotion.win:
-            return "Yay, we did it! :D";
+            return "Yay, we did it! :D Fresh air I missed you... actually smells fishy >.<";
         default:
-            return "I hate fish!!!!!!";
+            return "Oh no! My base station's life-support systems have shut down and all I have is this faulty diving bell! I will have to punch some holes into it in order to create uplift, but careful - I only have so much oxygen D:";
     }
 });
 
@@ -29,7 +29,7 @@ const text = computed(() => {
     <transition name="appear-from-right" appear>
         <div class="img-and-text">
             <img :src="imgSrc" />
-            <TextBubble>{{ text }}</TextBubble>
+            <TextBubble class="text-bubble">{{ text }}</TextBubble>
         </div>
     </transition>
 </template>
@@ -46,9 +46,13 @@ const text = computed(() => {
     align-items: flex-start;
 }
 
+.text-bubble {
+    max-width: 300px;
+}
+
 img {
-    width: 30%;
-    height: 50%;
+    width: 100px;
+    height: 100px;
 }
 
 .appear-from-right-enter-from {

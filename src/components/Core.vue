@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Matter, { Mouse, Body, Render, Vector, Events } from "matter-js";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 /* @ts-ignore */
 import * as PolyDecomp from "poly-decomp";
 import { BellControls } from "../controls/bellControls";
@@ -29,6 +29,7 @@ import { HealthBarHandler } from "../controls/healthBar";
 import { TERRAIN_1, TERRAIN_2 } from "../terrain";
 import { SoundPlayer } from "../utils/sound";
 import WonRepresentation from "./WonRepresentation.vue";
+import SubMarie from "./SubMarie.vue";
 
 /*
     REASONS for custom Renderer:
@@ -45,6 +46,8 @@ const Engine = Matter.Engine,
     Composite = Matter.Composite;
 
 Matter.Common.setDecomp(PolyDecomp);
+
+let showSubMarieStartMessage = ref(false);
 
 // create an engine
 const engine = Engine.create({
@@ -203,11 +206,14 @@ const onPlayAgain = () => {
     particleSystems.splice(0, particleSystems.length);
     healthBar.reset();
     Body.setPosition(bell, Vector.create(bellStartPosition.x, bellStartPosition.y));
+    showSubMarieStartMessage.value = true;
+    window.setTimeout(() => (showSubMarieStartMessage.value = false), 15000);
 };
 const winCon = new WinCon(bell, engine, onWon, onPlayAgain);
 
 let render: Render;
 onMounted(() => {
+    onPlayAgain();
     // create a renderer
     render = Render.create({
         element: document.querySelector<HTMLElement>("#core")!,
@@ -316,7 +322,8 @@ onMounted(() => {
             <HealthBar :health="healthBar.health.value" />
         </div>
     </div>
-    <WonRepresentation v-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
+    <SubMarie v-if="showSubMarieStartMessage" :emotion="1" />
+    <WonRepresentation v-else-if="winCon.shouldOfferRetry.value" :winCon="winCon"></WonRepresentation>
     <Debug :health-bar-handler="healthBar" />
 </template>
 

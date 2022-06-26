@@ -3,8 +3,6 @@ import { Engine, Events } from "matter-js";
 import { ref } from "vue";
 import { BellControls } from "./bellControls";
 
-const breathingDepletionFactor = 0.0025;
-
 export class HealthBarHandler {
     private readonly maxHealth = 1_000_000;
     public currentHealth = ref(this.maxHealth);
@@ -13,12 +11,15 @@ export class HealthBarHandler {
     public breathDepletion = ref(100);
     public holeDepletion = ref(35);
 
-    private listeners: (() => void)[] = [];
+    private running = true;
 
-    private breathingDepletion = breathingDepletionFactor;
+    private listeners: (() => void)[] = [];
 
     constructor(bellControls: BellControls, engine: Engine) {
         Events.on(engine, "afterUpdate", (e) => {
+            if (!this.running) {
+                return;
+            }
             this.currentHealth.value -= this.breathDepletion.value;
             this.currentHealth.value -= bellControls.forces.length * this.holeDepletion.value;
 
@@ -30,12 +31,12 @@ export class HealthBarHandler {
     }
 
     stopBreathing() {
-        this.breathingDepletion = 0;
+        this.running = false;
     }
 
     reset() {
         this.currentHealth.value = this.maxHealth;
-        this.breathingDepletion = breathingDepletionFactor;
+        this.running = true;
     }
 
     register(callBack: () => void) {
