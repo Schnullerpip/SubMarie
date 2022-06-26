@@ -2,6 +2,7 @@ import { Howl, Howler } from "howler";
 import { Common } from "matter-js";
 
 export type Sound =
+    | "vroot-vroot"
     | "level_music"
     | "win"
     | "game_over"

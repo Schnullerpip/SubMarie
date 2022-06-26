@@ -334,6 +334,7 @@ onMounted(() => {
     ].map(
         (vector) =>
             new Station(Vector.create(vector.x, vector.y + 300), engine, bell, () => {
+                soundPlayer.playSfx("vroot-vroot");
                 holeManager.reset();
                 bellControls.reset();
                 particleSystems.forEach((ps) => {
