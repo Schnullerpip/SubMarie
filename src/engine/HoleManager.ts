@@ -38,6 +38,7 @@ const holeObjectPool = new ObjectPool(bellHoleCreator, 30);
 
 export class HoleManager {
     private holes!: Set<PositionedHole>;
+    holeCount = 0;
     constructor(private readonly parent: Body, private readonly engine: Engine) {
         this.reset();
         Events.on(engine, "beforeUpdate", (event) => {
@@ -53,10 +54,14 @@ export class HoleManager {
     createHole(direction: Vector) {
         const hole = bellHoleCreator(direction);
         this.holes.add(hole);
+        this.holeCount++;
         Composite.add(this.engine.world, hole.body);
     }
 
-    reset() {
+    reset(resetHoleCount = false) {
+        if (resetHoleCount) {
+            this.holeCount = 0;
+        }
         this.holes?.forEach((hole) => Composite.remove(this.engine.world, hole.body));
         this.holes = new Set<PositionedHole>();
     }
