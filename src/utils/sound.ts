@@ -28,7 +28,7 @@ export class SoundPlayer {
         this.ambientSound?.stop();
 
         this.ambientSound = new Howl({
-            src: [`../sounds/${sound}.mp3`],
+            src: [`sounds/${sound}.mp3`],
             autoplay: true,
             loop,
             volume,
@@ -45,7 +45,7 @@ export class SoundPlayer {
         const howl =
             this.sfx[sound] ??
             new Howl({
-                src: [`../sounds/${sound}.mp3`],
+                src: [`sounds/${sound}.mp3`],
                 loop,
                 volume,
             });
@@ -64,9 +64,9 @@ export class SoundPlayer {
         Object.values(this.sfx).forEach((sound) => sound.stop());
     }
 
-    playSfxAsync(sound: Sound, volume = 0.5) {
+    playSfxStackable(sound: Sound, volume = 0.5) {
         new Howl({
-            src: [`../sounds/${sound}.mp3`],
+            src: [`sounds/${sound}.mp3`],
             autoplay: true,
             volume,
         });
